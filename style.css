@@ -1,0 +1,14 @@
+body {
+    background-color: #354698;
+    color: #F5F4C0;
+    font-family: "Aileron", Helvetica, sans-serif;
+    src: url("./aileron/Aileron-Regular.otf") format("opentype")
+}
+
+a {
+    color: #E7788D;
+}
+
+#square {
+    color: #F5F4C0;
+}
