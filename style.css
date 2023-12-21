@@ -1,8 +1,7 @@
 body {
     background-color: #354698;
     color: #F5F4C0;
-    font-family: "Aileron", Helvetica, sans-serif;
-    src: url("./aileron/Aileron-Regular.otf") format("opentype")
+    font-family: Helvetica, sans-serif;
 }
 
 a {
