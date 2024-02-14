@@ -2,17 +2,7 @@ body {
     background-color: #354698;
     color: #F5F4C0;
     font-family: Helvetica, sans-serif;
-}
 
-h1, h2 {
-    text-shadow: 10px 10px 10px black;
-}
-
-h1 { font-size: 330%; }
-
-h2 { font-size: 500% }
-
-#intro {
     position: absolute;
     top: 0;
     left: 0;
@@ -29,14 +19,10 @@ h2 { font-size: 500% }
     background: linear-gradient(0deg, rgba(2,0,36,1) 0%, rgba(53,70,152,1) 100%);
 }
 
-#tonoto {
-    display: inline;
+h1, h2 {
+    text-shadow: 10px 10px 10px black;
 }
 
-a {
-    color: #E7788D;
-}
+h1 { font-size: 330%; }
 
-#square {
-    color: #F5F4C0;
-}
+h2 { font-size: 500% }
