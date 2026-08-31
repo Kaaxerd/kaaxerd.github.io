@@ -78,13 +78,15 @@
 
     if (!best) return;
 
-    const size = Math.floor(Math.min(best.size, MAX_SIZE)) - 1;
     const { c, rows } = best;
+    const width = Math.floor(Math.min((availableWidth - gap * (c - 1)) / c, MAX_SIZE)) - 1;
+    const height = Math.floor(Math.min((availableHeight - gap * (rows - 1)) / rows, MAX_SIZE)) - 1;
     const lastRow = n - c * (rows - 1);
     const offset = Math.floor((c - lastRow) / 2);
     const lastRowStart = c * (rows - 1);
 
-    grid.style.gridTemplateColumns = `repeat(${c}, ${size}px)`;
+    grid.style.gridTemplateColumns = `repeat(${c}, ${width}px)`;
+    grid.style.gridAutoRows = `${height}px`;
 
     items.forEach((item, i) => {
       if (i >= lastRowStart) {

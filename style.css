@@ -332,6 +332,7 @@ a {
 .tech-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 7rem));
+  grid-auto-rows: 7rem;
   justify-content: center;
   align-content: center;
   gap: clamp(0.6rem, 2vmin, 1.5rem);
@@ -344,7 +345,7 @@ a {
   justify-content: center;
   gap: clamp(0.3rem, 1vmin, 0.65rem);
   width: 100%;
-  aspect-ratio: 1;
+  height: 100%;
   padding: clamp(0.5rem, 1.5vmin, 1.25rem);
   background: #f4f4f6;
   border-radius: 12px;
