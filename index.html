@@ -8,7 +8,22 @@
 </head>
 <body>
 
-  <header class="hero">
+  <nav class="section-nav" aria-label="Secciones">
+    <a href="#hero" class="section-nav-link" data-index="0">
+      <span class="section-nav-dot"></span>
+      <span class="section-nav-label">Inicio</span>
+    </a>
+    <a href="#objetivo" class="section-nav-link" data-index="1">
+      <span class="section-nav-dot"></span>
+      <span class="section-nav-label">Objetivo</span>
+    </a>
+    <a href="#slide-2" class="section-nav-link" data-index="2">
+      <span class="section-nav-dot"></span>
+      <span class="section-nav-label">Tecnologías</span>
+    </a>
+  </nav>
+
+  <header class="hero" id="hero">
     <div class="hero-content">
       <p class="hero-eyebrow">Hola, soy</p>
       <h1 class="hero-name">Harald Kleinschrot Colomer</h1>
@@ -29,62 +44,67 @@
       </div>
     </div>
 
-    <a href="#sobre-mi" class="hero-scroll" aria-label="Bajar a la siguiente sección">
+    <a href="#slide-2" class="hero-scroll" aria-label="Bajar a la siguiente sección">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
     </a>
   </header>
 
-  <nav>
-    <a href="#sobre-mi">Sobre mí</a>
-    <a href="#habilidades">Habilidades</a>
-    <a href="#proyectos">Proyectos</a>
-    <a href="#contacto">Contacto</a>
-  </nav>
-
   <main>
 
-    <section id="sobre-mi">
-      <h2>Sobre mí</h2>
-      <p>
-        Texto de ejemplo: aquí irá una breve presentación personal y profesional
-        (experiencia, motivación, a qué te dedicas dentro del desarrollo de videojuegos, etc.).
-      </p>
+    <section id="objetivo" class="slide">
+      <div class="tech-content">
+        <p class="tech-goal">
+          La misión principal: programar experiencias y videojuegos nuevos, refrescantes y entretenidos.
+        </p>
+      </div>
     </section>
 
-    <section id="habilidades">
-      <h2>Habilidades</h2>
-      <ul>
-        <li>Unity (C#)</li>
-        <li>Unreal Engine (C++ / Blueprints)</li>
-        <li>Control de versiones (Git)</li>
-        <li>Otras herramientas y tecnologías...</li>
-      </ul>
-    </section>
-
-    <section id="proyectos">
-      <h2>Proyectos</h2>
-
-      <article class="proyecto">
-        <h3>Nombre del proyecto 1</h3>
-        <p>Descripción breve del proyecto: qué es, qué motor se usó y tu rol en él.</p>
-        <a href="#">Ver proyecto</a>
-      </article>
-
-      <article class="proyecto">
-        <h3>Nombre del proyecto 2</h3>
-        <p>Descripción breve del proyecto: qué es, qué motor se usó y tu rol en él.</p>
-        <a href="#">Ver proyecto</a>
-      </article>
-
-    </section>
-
-    <section id="contacto">
-      <h2>Contacto</h2>
-      <ul>
-        <li>Email: tu-email@ejemplo.com</li>
-        <li>LinkedIn: <a href="#">enlace</a></li>
-        <li>GitHub: <a href="#">enlace</a></li>
-      </ul>
+    <section id="slide-2" class="slide">
+      <div class="tech-content">
+        <h2 class="tech-question">¿Cómo?</h2>
+        <div class="tech-grid">
+          <div class="tech-item">
+            <img class="tech-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/unity/unity-original.svg" alt="Unity">
+            <span>Unity</span>
+          </div>
+          <div class="tech-item">
+            <img class="tech-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/unrealengine/unrealengine-original.svg" alt="Unreal Engine">
+            <span>Unreal Engine</span>
+          </div>
+          <div class="tech-item">
+            <img class="tech-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" alt="C++">
+            <span>C++</span>
+          </div>
+          <div class="tech-item">
+            <img class="tech-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/opengl/opengl-original.svg" alt="OpenGL">
+            <span>OpenGL</span>
+          </div>
+          <div class="tech-item">
+            <img class="tech-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg" alt="C#">
+            <span>C#</span>
+          </div>
+          <div class="tech-item">
+            <img class="tech-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/c/c-original.svg" alt="C">
+            <span>C</span>
+          </div>
+          <div class="tech-item">
+            <img class="tech-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python">
+            <span>Python</span>
+          </div>
+          <div class="tech-item">
+            <img class="tech-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" alt="Java">
+            <span>Java</span>
+          </div>
+          <div class="tech-item">
+            <img class="tech-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" alt="JavaScript">
+            <span>JavaScript</span>
+          </div>
+          <div class="tech-item">
+            <img class="tech-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" alt="React">
+            <span>React</span>
+          </div>
+        </div>
+      </div>
     </section>
 
   </main>
@@ -93,5 +113,6 @@
     <p>&copy; 2026 Kaaxerd</p>
   </footer>
 
+  <script src="script.js"></script>
 </body>
 </html>

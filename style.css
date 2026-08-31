@@ -120,6 +120,75 @@ body {
   background: var(--background);
   color: var(--foreground);
   line-height: 1.6;
+  overflow-x: hidden;
+}
+
+.section-nav {
+  position: fixed;
+  top: 50%;
+  right: 1.75rem;
+  transform: translateY(-50%);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  width: 9rem;
+}
+
+.section-nav::before {
+  content: "";
+  position: absolute;
+  top: -2rem;
+  bottom: -2rem;
+  right: calc(0.55rem / 2 - 0.5px);
+  width: 1px;
+  background: color-mix(in srgb, var(--foreground) 25%, transparent);
+  z-index: 0;
+}
+
+.section-nav-link {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.6rem;
+  width: 100%;
+  color: var(--muted-foreground);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.section-nav-link:hover,
+.section-nav-link.active {
+  color: var(--accent);
+}
+
+.section-nav-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.section-nav-dot {
+  position: relative;
+  width: 0.55rem;
+  height: 0.55rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+@media (max-width: 640px) {
+  .section-nav {
+    right: 1rem;
+    width: 1.5rem;
+  }
+
+  .section-nav-label {
+    display: none;
+  }
 }
 
 .hero {
@@ -214,46 +283,85 @@ body {
   border-color: var(--accent);
 }
 
-nav {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 0.75rem 1.5rem;
-  background: var(--muted);
-  padding: 1rem;
-}
-
-nav a {
-  color: var(--foreground);
-  text-decoration: none;
-}
-
-nav a:hover {
-  color: var(--accent);
-  text-decoration: underline;
-}
-
-main {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 1.5rem;
-  width: 100%;
-}
-
-section {
-  margin-bottom: 2.5rem;
-}
-
 a {
   color: var(--accent);
 }
 
-.proyecto {
-  background: var(--card);
-  color: var(--card-foreground);
-  border: 1px solid var(--border);
-  padding: 1rem;
-  margin-bottom: 1rem;
+.slide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.tech-content {
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.tech-goal {
+  margin: 0 0 2rem;
+  font-size: clamp(1.4rem, 1.5vw + 1.1rem, 2.25rem);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.tech-question {
+  margin: 0 0 2.5rem;
+  color: var(--accent);
+  font-size: clamp(1.05rem, 0.5vw + 0.9rem, 1.3rem);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.tech-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 2rem 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .tech-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem 1rem;
+  }
+}
+
+.tech-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 1.25rem 1rem;
+  background: #f4f4f6;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tech-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.tech-icon {
+  width: 3rem;
+  height: 3rem;
+  object-fit: contain;
+}
+
+.tech-item span {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #151c28;
 }
 
 footer {
