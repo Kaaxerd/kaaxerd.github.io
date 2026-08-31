@@ -6,9 +6,12 @@
   const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
   const navLinks = Array.from(document.querySelectorAll(".section-nav-link"));
+  const sectionNav = document.querySelector(".section-nav");
+  const hero = document.querySelector(".hero");
 
   let targets = [];
   let current = 0;
+  let maxReached = 0;
   let animating = false;
 
   function computeTargets() {
@@ -17,10 +20,21 @@
     if (maxScroll > targets[targets.length - 1] + 10) targets.push(maxScroll);
   }
 
+  function updateNavOpacity() {
+    if (!sectionNav || !hero) return;
+    const heroHeight = hero.offsetHeight || 1;
+    const progress = Math.min(Math.max(window.scrollY / heroHeight, 0), 1);
+    sectionNav.style.opacity = String(progress);
+    sectionNav.style.pointerEvents = progress > 0.1 ? "auto" : "none";
+  }
+
   function updateActiveNav(index) {
     const navIndex = Math.min(index, panels.length - 1);
+    if (navIndex > maxReached) maxReached = navIndex;
     navLinks.forEach((link) => {
-      link.classList.toggle("active", Number(link.dataset.index) === navIndex);
+      const linkIndex = Number(link.dataset.index);
+      link.classList.toggle("active", linkIndex === navIndex);
+      link.classList.toggle("revealed", linkIndex <= maxReached);
     });
   }
 
@@ -38,6 +52,7 @@
     function step(now) {
       const t = Math.min((now - startTime) / duration, 1);
       window.scrollTo(0, startY + distance * ease(t));
+      updateNavOpacity();
       if (t < 1) {
         requestAnimationFrame(step);
       } else {
@@ -50,8 +65,12 @@
 
   computeTargets();
   updateActiveNav(current);
+  updateNavOpacity();
   window.addEventListener("resize", computeTargets);
+  window.addEventListener("resize", updateNavOpacity);
   window.addEventListener("load", computeTargets);
+  window.addEventListener("load", updateNavOpacity);
+  window.addEventListener("scroll", updateNavOpacity, { passive: true });
 
   window.addEventListener(
     "wheel",
