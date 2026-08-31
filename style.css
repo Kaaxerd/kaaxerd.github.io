@@ -303,15 +303,8 @@ a {
   height: 100vh;
   height: 100dvh;
   padding: clamp(1rem, 4vh, 3rem) 1.5rem;
-  padding-right: calc(1.75rem + 9rem + 1.5rem);
   text-align: center;
   overflow: hidden;
-}
-
-@media (max-width: 640px) {
-  .slide {
-    padding-right: calc(1rem + 1.5rem + 1rem);
-  }
 }
 
 .tech-content {
