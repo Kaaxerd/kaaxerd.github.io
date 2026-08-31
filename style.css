@@ -300,10 +300,11 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  min-height: 100dvh;
-  padding: 3rem 1.5rem;
+  height: 100vh;
+  height: 100dvh;
+  padding: clamp(1rem, 4vh, 3rem) 1.5rem;
   text-align: center;
+  overflow: hidden;
 }
 
 .tech-content {
@@ -320,7 +321,7 @@ a {
 }
 
 .tech-question {
-  margin: 0 0 2.5rem;
+  margin: 0 0 clamp(1rem, 3vh, 2.5rem);
   color: var(--accent);
   font-size: clamp(1.05rem, 0.5vw + 0.9rem, 1.3rem);
   font-weight: 600;
@@ -329,16 +330,11 @@ a {
 }
 
 .tech-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 2rem 1.5rem;
-}
-
-@media (max-width: 640px) {
-  .tech-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.25rem 1rem;
-  }
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: center;
+  gap: clamp(0.6rem, 2vmin, 1.5rem);
 }
 
 .tech-item {
@@ -346,10 +342,11 @@ a {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.65rem;
-  width: 100%;
+  gap: clamp(0.3rem, 1vmin, 0.65rem);
+  flex: 0 0 auto;
+  width: clamp(3.5rem, 12vmin, 7rem);
   aspect-ratio: 1;
-  padding: 1.25rem 1rem;
+  padding: clamp(0.5rem, 1.5vmin, 1.25rem);
   background: #f4f4f6;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
@@ -362,13 +359,13 @@ a {
 }
 
 .tech-icon {
-  width: 3rem;
-  height: 3rem;
+  width: clamp(1.4rem, 5vmin, 3rem);
+  height: clamp(1.4rem, 5vmin, 3rem);
   object-fit: contain;
 }
 
 .tech-item span {
-  font-size: 0.9rem;
+  font-size: clamp(0.65rem, 2.2vmin, 0.9rem);
   font-weight: 600;
   color: #151c28;
 }
