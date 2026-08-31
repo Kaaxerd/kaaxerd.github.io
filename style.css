@@ -189,7 +189,7 @@ body {
   background: currentColor;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 1024px) {
   .section-nav {
     right: 1rem;
     width: 1.5rem;
