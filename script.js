@@ -4,8 +4,26 @@
   }
   window.scrollTo(0, 0);
 
+  document.documentElement.classList.add("has-title-reveal");
+
   const panels = Array.from(document.querySelectorAll(".hero, .slide"));
   if (!panels.length) return;
+
+  const titleTargets = document.querySelectorAll(".project-title");
+  if (titleTargets.length && "IntersectionObserver" in window) {
+    const titleObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("revealed");
+            titleObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+    titleTargets.forEach((el) => titleObserver.observe(el));
+  }
 
   const duration = 900;
   const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
