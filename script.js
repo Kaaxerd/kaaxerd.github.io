@@ -1,4 +1,9 @@
 (() => {
+  if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
+  }
+  window.scrollTo(0, 0);
+
   const panels = Array.from(document.querySelectorAll(".hero, .slide"));
   if (!panels.length) return;
 
@@ -18,6 +23,76 @@
     const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
     targets = panels.map((panel) => panel.offsetTop);
     if (maxScroll > targets[targets.length - 1] + 10) targets.push(maxScroll);
+  }
+
+  function layoutTechGrid() {
+    const grid = document.querySelector(".tech-grid");
+    if (!grid) return;
+    const items = Array.from(grid.children);
+    const n = items.length;
+    if (!n) return;
+
+    const slide = grid.closest(".slide");
+    const slideStyle = getComputedStyle(slide);
+    const gridStyle = getComputedStyle(grid);
+    const gap = parseFloat(gridStyle.columnGap || gridStyle.gap) || 0;
+    const paddingBottom = parseFloat(slideStyle.paddingBottom) || 0;
+
+    const slideRect = slide.getBoundingClientRect();
+    const gridRect = grid.getBoundingClientRect();
+    const availableWidth = gridRect.width;
+    const availableHeight = slideRect.bottom - gridRect.top - paddingBottom;
+
+    const MIN_SIZE = 44;
+    const MAX_SIZE = 112;
+
+    let best = null;
+    for (let c = 1; c <= n; c++) {
+      const rows = Math.ceil(n / c);
+      const itemW = (availableWidth - gap * (c - 1)) / c;
+      const itemH = (availableHeight - gap * (rows - 1)) / rows;
+      const size = Math.min(itemW, itemH);
+      if (size <= 0) continue;
+      const lastRow = n - c * (rows - 1);
+      const unevenness = c - lastRow;
+      const candidate = { c, rows, size, unevenness };
+
+      if (!best) {
+        best = candidate;
+        continue;
+      }
+
+      const bestFits = best.size >= MIN_SIZE;
+      const candFits = size >= MIN_SIZE;
+
+      if (candFits && !bestFits) {
+        best = candidate;
+      } else if (candFits === bestFits) {
+        if (candidate.unevenness < best.unevenness) {
+          best = candidate;
+        } else if (candidate.unevenness === best.unevenness && candidate.size > best.size) {
+          best = candidate;
+        }
+      }
+    }
+
+    if (!best) return;
+
+    const size = Math.floor(Math.min(best.size, MAX_SIZE)) - 1;
+    const { c, rows } = best;
+    const lastRow = n - c * (rows - 1);
+    const offset = Math.floor((c - lastRow) / 2);
+    const lastRowStart = c * (rows - 1);
+
+    grid.style.gridTemplateColumns = `repeat(${c}, ${size}px)`;
+
+    items.forEach((item, i) => {
+      if (i >= lastRowStart) {
+        item.style.gridColumnStart = String(offset + 1 + (i - lastRowStart));
+      } else {
+        item.style.gridColumnStart = "";
+      }
+    });
   }
 
   function updateNavOpacity() {
@@ -63,13 +138,26 @@
     requestAnimationFrame(step);
   }
 
-  computeTargets();
+  function refreshLayout() {
+    layoutTechGrid();
+    computeTargets();
+    updateNavOpacity();
+  }
+
+  let resizeQueued = false;
+  function queueRefreshLayout() {
+    if (resizeQueued) return;
+    resizeQueued = true;
+    requestAnimationFrame(() => {
+      resizeQueued = false;
+      refreshLayout();
+    });
+  }
+
+  refreshLayout();
   updateActiveNav(current);
-  updateNavOpacity();
-  window.addEventListener("resize", computeTargets);
-  window.addEventListener("resize", updateNavOpacity);
-  window.addEventListener("load", computeTargets);
-  window.addEventListener("load", updateNavOpacity);
+  window.addEventListener("resize", queueRefreshLayout);
+  window.addEventListener("load", refreshLayout);
   window.addEventListener("scroll", updateNavOpacity, { passive: true });
 
   window.addEventListener(
