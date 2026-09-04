@@ -1,0 +1,38 @@
+# Harald Kleinschrot Colomer (Kaaxerd)
+
+> Desarrollador de videojuegos junior e Ingeniero de Software, en busca de su primera oportunidad profesional en el sector de los videojuegos.
+
+## Quién es
+
+Harald Kleinschrot Colomer es un ingeniero de software especializado en desarrollo de videojuegos, graduado por U-tad Centro Universitario de Tecnología y Arte Digital con mención en Programación Gráfica y Videojuegos (2022-2026).
+
+## Stack técnico
+
+- Motores: Unity, Unreal Engine
+- Lenguajes: C++, C#, C, Python, Java, JavaScript
+- Gráficos: OpenGL
+- Web: React
+- Otros: ingeniería inversa (Ghidra), profiling de rendimiento
+
+## Proyectos de videojuegos
+
+- NextCell — escape room cooperativo en Unity. https://github.com/Kaaxerd/NextCell
+- Light — escape room de puzzles de luces en Unity. https://github.com/Kaaxerd/light · https://lakarcher.itch.io/escape-light-dungeon
+- Patata o Plomo — tower defense con cultivo de plantas-armas en Unreal Engine. https://github.com/Kaaxerd/patata-o-plomo
+- Fireball — aventura VR en primera persona en Unity. https://github.com/Kaaxerd/FIREBALL
+- Player vs Cubos — shooter de supervivencia en Unity. https://github.com/Kaaxerd/Player-vs-Cubos
+- Trabajo de Fin de Grado — análisis e investigación del código de Pokémon Escarlata y Púrpura: diagnóstico de rendimiento (memory leak, pop-in, stuttering) mediante ingeniería inversa con Ghidra y profiling empírico.
+
+## Experiencia laboral
+
+- Capgemini — Ingeniero de Automatización de Procesos en prácticas (enero 2026 - julio 2026).
+- Tatina Home — Desarrollador Web WordPress (febrero 2024 - marzo 2024).
+
+## Enlaces
+
+- Portfolio: https://kaaxerd.github.io/
+- GitHub: https://github.com/Kaaxerd
+- LinkedIn: https://www.linkedin.com/in/haraldkleinschrot/
+- itch.io: https://lakarcher.itch.io/
+- Email: kcharald@proton.me
+- CV: https://kaaxerd.github.io/cv.pdf

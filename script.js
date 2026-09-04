@@ -31,6 +31,7 @@
   const navLinks = Array.from(document.querySelectorAll(".section-nav-link"));
   const sectionNav = document.querySelector(".section-nav");
   const hero = document.querySelector(".hero");
+  const langFlagsPreview = document.querySelector(".lang-flags-preview");
 
   let targets = [];
   let current = 0;
@@ -121,6 +122,9 @@
     const progress = Math.min(Math.max(window.scrollY / heroHeight, 0), 1);
     sectionNav.style.opacity = String(progress);
     sectionNav.style.pointerEvents = progress > 0.1 ? "auto" : "none";
+    if (langFlagsPreview) {
+      langFlagsPreview.style.opacity = String(1 - progress);
+    }
   }
 
   function updateActiveNav(index) {
