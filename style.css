@@ -153,8 +153,7 @@ body {
 .lang-flags-preview svg {
   width: 1.25rem;
   height: auto;
-  border-radius: 2px;
-  box-shadow: 0 0 0 1px var(--border);
+  display: block;
 }
 
 .section-nav::before {
@@ -821,8 +820,7 @@ a {
 .language-flag {
   width: clamp(3.5rem, 8vmin, 5rem);
   height: auto;
-  border-radius: 4px;
-  box-shadow: 0 0 0 1px var(--border);
+  display: block;
 }
 
 .language-name {
