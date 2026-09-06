@@ -233,6 +233,13 @@
     animateTo(1);
   });
 
+  document.querySelectorAll(".project-next").forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      animateTo(current + 1);
+    });
+  });
+
   navLinks.forEach((link) => {
     link.addEventListener("click", (e) => {
       e.preventDefault();
