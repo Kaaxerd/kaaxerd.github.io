@@ -184,9 +184,25 @@
   window.addEventListener("load", refreshLayout);
   window.addEventListener("scroll", updateNavOpacity, { passive: true });
 
+  function openDialog() {
+    return document.querySelector("dialog[open], [popover]:popover-open");
+  }
+
+  function isDialogOpen() {
+    return Boolean(openDialog());
+  }
+
   window.addEventListener(
     "wheel",
     (e) => {
+      const dialog = openDialog();
+      if (dialog) {
+        // Keep the page from scrolling underneath the popover so it stays
+        // put; if the wheel is over the popover itself, let it scroll its
+        // own (scrollbar-less) content instead.
+        if (!dialog.contains(e.target)) e.preventDefault();
+        return;
+      }
       e.preventDefault();
       if (animating) return;
       if (e.deltaY > 0) animateTo(current + 1);
@@ -207,7 +223,7 @@
   window.addEventListener(
     "touchend",
     (e) => {
-      if (touchStartY === null || animating) return;
+      if (touchStartY === null || animating || isDialogOpen()) return;
       const delta = touchStartY - e.changedTouches[0].clientY;
       touchStartY = null;
       if (Math.abs(delta) < 50) return;
@@ -218,7 +234,7 @@
   );
 
   window.addEventListener("keydown", (e) => {
-    if (animating) return;
+    if (animating || isDialogOpen()) return;
     if (e.key === "ArrowDown" || e.key === "PageDown") {
       e.preventDefault();
       animateTo(current + 1);
@@ -245,5 +261,77 @@
       e.preventDefault();
       animateTo(Number(link.dataset.index));
     });
+  });
+})();
+
+(() => {
+  const popover = document.getElementById("capgemini-work");
+  const opener = document.querySelector('[popovertarget="capgemini-work"]');
+  if (!popover || !opener) return;
+  const arrow = popover.querySelector(".work-popover-arrow");
+
+  const compactQuery = window.matchMedia("(max-width: 29rem), (max-height: 22rem)");
+
+  function positionPopover() {
+    if (compactQuery.matches) {
+      popover.style.removeProperty("left");
+      popover.style.removeProperty("top");
+      return;
+    }
+
+    const btnRect = opener.getBoundingClientRect();
+    const margin = 12;
+    const gap = 10;
+
+    popover.style.left = "0px";
+    popover.style.top = "0px";
+
+    const popRect = popover.getBoundingClientRect();
+
+    let left = btnRect.left;
+    left = Math.min(left, window.innerWidth - popRect.width - margin);
+    left = Math.max(left, margin);
+
+    const spaceBelow = window.innerHeight - btnRect.bottom - gap - margin;
+    const spaceAbove = btnRect.top - gap - margin;
+
+    let top;
+    let placeAbove;
+    if (popRect.height <= spaceBelow || spaceBelow >= spaceAbove) {
+      placeAbove = false;
+      top = btnRect.bottom + gap;
+    } else {
+      placeAbove = true;
+      top = btnRect.top - gap - popRect.height;
+    }
+    top = Math.min(Math.max(top, margin), window.innerHeight - margin - popRect.height);
+
+    popover.style.left = `${left}px`;
+    popover.style.top = `${top}px`;
+
+    if (arrow) {
+      const arrowLeft = Math.min(
+        Math.max(btnRect.left + btnRect.width / 2 - left - 6, 12),
+        popRect.width - 24
+      );
+      arrow.style.left = `${arrowLeft}px`;
+      if (placeAbove) {
+        arrow.style.top = "auto";
+        arrow.style.bottom = "-6px";
+        arrow.style.transform = "rotate(225deg)";
+      } else {
+        arrow.style.top = "-6px";
+        arrow.style.bottom = "auto";
+        arrow.style.transform = "rotate(45deg)";
+      }
+    }
+  }
+
+  popover.addEventListener("toggle", (e) => {
+    if (e.newState === "open") positionPopover();
+  });
+
+  window.addEventListener("resize", () => {
+    if (popover.matches(":popover-open")) positionPopover();
   });
 })();
