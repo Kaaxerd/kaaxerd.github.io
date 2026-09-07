@@ -114,13 +114,17 @@
 }
 
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Satoshi', sans-serif;
   margin: 0;
   padding: 0;
   background: var(--background);
   color: var(--foreground);
   line-height: 1.6;
   overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Cabinet Grotesk', sans-serif;
 }
 
 .section-nav {
@@ -407,22 +411,29 @@ a {
   width: 100%;
   height: 100%;
   padding: clamp(0.5rem, 1.5vmin, 1.25rem);
-  background: #f4f4f6;
-  color: #151c28;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.tech-item:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  background: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: none;
 }
 
 .tech-icon,
 .tech-icon-duo {
   width: clamp(1.4rem, 5vmin, 3rem);
   height: clamp(1.4rem, 5vmin, 3rem);
+  color: #ffffff;
+}
+
+.tech-icon {
+  background-color: transparent;
+  background-image: var(--icon-src);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  -webkit-mask-image: none;
+  mask-image: none;
+  filter: brightness(0) invert(1);
 }
 
 .tech-icon-duo {
@@ -431,7 +442,8 @@ a {
 
 .tech-item span {
   font-size: clamp(0.65rem, 2.2vmin, 0.9rem);
-  font-weight: 600;
+  font-weight: 500;
+  color: #ffffff;
 }
 
 .project-title {
@@ -595,7 +607,11 @@ a {
   flex-shrink: 0;
 }
 
-.tech-icon,
+.tech-icon {
+  display: inline-block;
+  flex-shrink: 0;
+}
+
 .project-tech-icon {
   display: inline-block;
   flex-shrink: 0;
@@ -758,6 +774,7 @@ a {
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--accent);
+  line-height: 1.4;
 }
 
 .timeline-role {
@@ -768,11 +785,143 @@ a {
 }
 
 .timeline-desc {
-  margin: 0;
+  margin: 0.5rem 0 0;
   max-width: 26rem;
   font-size: 0.9rem;
   color: var(--muted-foreground);
   line-height: 1.5;
+  white-space: pre-line;
+}
+
+.timeline-toggle {
+  margin-top: 0.5rem;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--accent);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+}
+
+.timeline-toggle:hover {
+  text-decoration: underline;
+}
+
+.work-popover {
+  position: fixed;
+  margin: 0;
+  width: 27rem;
+  height: 20rem;
+  padding: 1.5rem 1.85rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--card-foreground);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.work-popover::-webkit-scrollbar {
+  display: none;
+}
+
+.work-popover-close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--muted-foreground);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.work-popover-close:hover {
+  color: var(--card-foreground);
+}
+
+.work-popover-arrow {
+  position: absolute;
+  width: 0.75rem;
+  height: 0.75rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-right: none;
+  border-bottom: none;
+  transform: rotate(45deg);
+}
+
+.work-popover-back {
+  display: none;
+}
+
+/* Screen too small for the fixed-size popover: go fullscreen instead of
+   ever showing a scrollbar. */
+@media (max-width: 29rem), (max-height: 22rem) {
+  .work-popover {
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    padding: 4.5rem 1.5rem 1.5rem;
+  }
+
+  .work-popover-arrow {
+    display: none;
+  }
+
+  .work-popover-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    position: absolute;
+    top: 1.25rem;
+    left: 1.25rem;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: none;
+    color: var(--card-foreground);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .work-popover-back svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+.work-dialog-meta {
+  margin: 0 0 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.work-dialog-title {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+}
+
+.work-dialog-desc {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+  white-space: pre-line;
 }
 
 @media (max-width: 900px) {
