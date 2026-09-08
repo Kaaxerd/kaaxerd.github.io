@@ -335,3 +335,47 @@
     if (popover.matches(":popover-open")) positionPopover();
   });
 })();
+
+(() => {
+  const hero = document.querySelector(".hero");
+  const grid = document.querySelector(".viewport-grid");
+  const gizmo = document.querySelector(".viewport-gizmo");
+  if (!hero || !grid || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  let targetX = 0;
+  let targetY = 0;
+  let curX = 0;
+  let curY = 0;
+  let raf = null;
+
+  function tick() {
+    curX += (targetX - curX) * 0.08;
+    curY += (targetY - curY) * 0.08;
+    grid.style.setProperty("--tilt-x", `${(curY * 6).toFixed(2)}deg`);
+    grid.style.setProperty("--tilt-y", `${(curX * 10).toFixed(2)}deg`);
+    if (gizmo) gizmo.style.transform = `rotate(${(curX * 8).toFixed(2)}deg)`;
+
+    if (Math.abs(targetX - curX) > 0.0005 || Math.abs(targetY - curY) > 0.0005) {
+      raf = requestAnimationFrame(tick);
+    } else {
+      raf = null;
+    }
+  }
+
+  hero.addEventListener(
+    "mousemove",
+    (e) => {
+      const rect = hero.getBoundingClientRect();
+      targetX = (e.clientX - rect.left) / rect.width - 0.5;
+      targetY = (e.clientY - rect.top) / rect.height - 0.5;
+      if (!raf) raf = requestAnimationFrame(tick);
+    },
+    { passive: true }
+  );
+
+  hero.addEventListener("mouseleave", () => {
+    targetX = 0;
+    targetY = 0;
+    if (!raf) raf = requestAnimationFrame(tick);
+  });
+})();
