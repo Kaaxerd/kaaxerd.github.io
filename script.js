@@ -337,6 +337,145 @@
 })();
 
 (() => {
+  const GALLERY_IMAGES = {
+    nextcell: [
+      "Captura de pantalla 2026-09-11 121509.png",
+      "Captura de pantalla 2026-09-11 121542.png",
+      "Captura de pantalla 2026-09-11 121613.png",
+      "Captura de pantalla 2026-09-11 121644.png",
+    ],
+    fireball: [],
+    "escape-light-dungeon": [
+      "Captura de pantalla 2026-09-11 124755.png",
+      "Captura de pantalla 2026-09-11 124834.png",
+      "Captura de pantalla 2026-09-11 124859.png",
+      "Captura de pantalla 2026-09-11 124928.png",
+    ],
+    "patata-o-plomo": [],
+    "player-vs-cubos": [],
+    tfg: [],
+  };
+
+  const AUTOPLAY_MS = 5000;
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function buildGallery(container, project, files) {
+    const images = shuffle(files);
+    let index = 0;
+    let timer = null;
+
+    container.classList.add("has-gallery");
+    container.removeAttribute("aria-hidden");
+    container.setAttribute("role", "group");
+    container.setAttribute("aria-roledescription", "carrusel");
+    container.setAttribute("aria-label", `Capturas de ${project}`);
+    container.querySelector(".project-media-icon")?.remove();
+
+    const slidesWrap = document.createElement("div");
+    slidesWrap.className = "project-media-slides";
+
+    const slides = images.map((file, i) => {
+      const img = document.createElement("img");
+      img.className = "project-media-slide";
+      img.src = `img/${project}/${encodeURIComponent(file)}`;
+      img.alt = `Captura ${i + 1} de ${images.length} de ${project}`;
+      img.loading = "lazy";
+      slidesWrap.appendChild(img);
+      return img;
+    });
+    container.appendChild(slidesWrap);
+
+    let dots = [];
+    if (images.length > 1) {
+      const prevBtn = document.createElement("button");
+      prevBtn.type = "button";
+      prevBtn.className = "project-media-nav project-media-nav--prev";
+      prevBtn.setAttribute("aria-label", "Imagen anterior");
+      prevBtn.innerHTML =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>';
+
+      const nextBtn = document.createElement("button");
+      nextBtn.type = "button";
+      nextBtn.className = "project-media-nav project-media-nav--next";
+      nextBtn.setAttribute("aria-label", "Imagen siguiente");
+      nextBtn.innerHTML =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>';
+
+      const dotsWrap = document.createElement("div");
+      dotsWrap.className = "project-media-dots";
+      dots = images.map((_, i) => {
+        const dot = document.createElement("button");
+        dot.type = "button";
+        dot.className = "project-media-dot";
+        dot.setAttribute("aria-label", `Ir a la imagen ${i + 1}`);
+        dot.addEventListener("click", (e) => {
+          e.stopPropagation();
+          goTo(i);
+          restartTimer();
+        });
+        dotsWrap.appendChild(dot);
+        return dot;
+      });
+
+      container.append(prevBtn, nextBtn);
+      (container.closest(".project-media-wrap") || container).append(dotsWrap);
+
+      prevBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        goTo(index - 1);
+        restartTimer();
+      });
+      nextBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        goTo(index + 1);
+        restartTimer();
+      });
+    }
+
+    function render() {
+      slides.forEach((img, i) => img.classList.toggle("active", i === index));
+      dots.forEach((dot, i) => dot.classList.toggle("active", i === index));
+    }
+
+    function goTo(i) {
+      index = (i + images.length) % images.length;
+      render();
+    }
+
+    function restartTimer() {
+      if (images.length < 2) return;
+      if (timer) clearInterval(timer);
+      timer = setInterval(() => goTo(index + 1), AUTOPLAY_MS);
+    }
+
+    render();
+    restartTimer();
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        if (timer) clearInterval(timer);
+      } else {
+        restartTimer();
+      }
+    });
+  }
+
+  document.querySelectorAll(".project-media[data-gallery]").forEach((container) => {
+    const project = container.dataset.gallery;
+    const files = GALLERY_IMAGES[project];
+    if (files && files.length) buildGallery(container, project, files);
+  });
+})();
+
+(() => {
   const hero = document.querySelector(".hero");
   const grid = document.querySelector(".viewport-grid");
   const gizmo = document.querySelector(".viewport-gizmo");
