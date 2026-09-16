@@ -1208,6 +1208,48 @@ a {
   font-weight: 600;
 }
 
+.language-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+  max-width: 170px;
+}
+
+.language-stat-label {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--muted-foreground);
+}
+
+.language-stat-bar {
+  position: relative;
+  flex: 1;
+  height: 10px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--foreground) 12%, transparent);
+  overflow: hidden;
+}
+
+.language-stat-bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--card) 0 2px,
+    transparent 2px calc(100% / 6)
+  );
+}
+
+.language-stat-fill {
+  display: block;
+  height: 100%;
+  width: var(--fill, 0%);
+  background: var(--accent);
+}
+
 .language-desc {
   margin: 0;
   font-size: 0.8rem;
