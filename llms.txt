@@ -21,7 +21,7 @@ Harald Kleinschrot Colomer es un ingeniero de software especializado en desarrol
 - Patata o Plomo — tower defense con cultivo de plantas-armas en Unreal Engine. https://github.com/Kaaxerd/patata-o-plomo
 - Fireball — aventura VR en primera persona en Unity. https://github.com/Kaaxerd/FIREBALL
 - Player vs Cubos — shooter de supervivencia en Unity. https://github.com/Kaaxerd/Player-vs-Cubos
-- Trabajo de Fin de Grado — análisis e investigación del código de Pokémon Escarlata y Púrpura: diagnóstico de rendimiento (memory leak, pop-in, stuttering) mediante ingeniería inversa con Ghidra y profiling empírico.
+- Trabajo de Fin de Grado — análisis e investigación del código de Pokémon Escarlata y Púrpura: diagnóstico de rendimiento (memory leak, pop-in, stuttering) mediante ingeniería inversa con Ghidra y profiling empírico. https://kaaxerd.github.io/tfg/
 
 ## Experiencia laboral
 
@@ -31,6 +31,7 @@ Harald Kleinschrot Colomer es un ingeniero de software especializado en desarrol
 ## Enlaces
 
 - Portfolio: https://kaaxerd.github.io/
+- Trabajo de Fin de Grado: https://kaaxerd.github.io/tfg/
 - GitHub: https://github.com/Kaaxerd
 - LinkedIn: https://www.linkedin.com/in/haraldkleinschrot/
 - itch.io: https://lakarcher.itch.io/
