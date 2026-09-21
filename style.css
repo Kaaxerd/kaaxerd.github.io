@@ -585,6 +585,40 @@ a {
   line-height: 1.5;
 }
 
+.project-work {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  width: 100%;
+  max-width: 32rem;
+  text-align: left;
+}
+
+.project-work-title {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.project-work-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--muted-foreground);
+}
+
+.project-work-list strong {
+  font-weight: 600;
+  color: var(--foreground);
+}
+
 .project-link {
   margin-top: 0.5rem;
   font-size: 0.95rem;
@@ -899,10 +933,26 @@ a {
   }
 
   .project-slide {
-    align-items: flex-start;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
     overflow-y: auto;
     overscroll-behavior: contain;
     padding-top: clamp(1.5rem, 5vh, 2.5rem);
+  }
+
+  /* In the stacked layout the link flows after the content instead of
+     floating over it while the slide scrolls. */
+  .project-next {
+    position: static;
+    transform: none;
+    flex-shrink: 0;
+    margin-top: 1.25rem;
+  }
+
+  .project-work {
+    /* Keep the text clear of the fixed section-nav rail. */
+    padding-right: 1.75rem;
   }
 }
 
