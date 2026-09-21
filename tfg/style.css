@@ -1,0 +1,79 @@
+:root {
+  --scarlet: #800000;
+  --violet: #5B0A91;
+  --text: #FFDE00;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Satoshi', sans-serif;
+  line-height: 1.6;
+  color: var(--text);
+  background: linear-gradient(to right, var(--scarlet) 0 50%, var(--violet) 50% 100%);
+}
+
+a {
+  color: inherit;
+}
+
+.page-header {
+  padding: 1.5rem clamp(1.25rem, 5vw, 3rem);
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  opacity: 0.85;
+}
+
+.back-link:hover {
+  opacity: 1;
+}
+
+.back-link svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.page-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: clamp(2rem, 8vh, 5rem) clamp(1.25rem, 5vw, 3rem);
+  text-align: center;
+}
+
+.eyebrow {
+  margin: 0;
+  font-family: 'Rubik', sans-serif;
+  font-size: clamp(1rem, 0.5vw + 0.9rem, 1.25rem);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  opacity: 0.85;
+}
+
+.page-title {
+  margin: 0;
+  max-width: 20ch;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 900;
+  font-size: clamp(2.25rem, 6vw + 1rem, 6rem);
+  line-height: 1.05;
+}
