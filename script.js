@@ -132,7 +132,9 @@
     sectionNav.style.opacity = String(opacity);
     sectionNav.style.pointerEvents = opacity > 0.1 ? "auto" : "none";
     if (langFlagsPreview) {
-      langFlagsPreview.style.opacity = String(1 - progress);
+      const langOpacity = 1 - progress;
+      langFlagsPreview.style.opacity = String(langOpacity);
+      langFlagsPreview.style.pointerEvents = langOpacity > 0.1 ? "auto" : "none";
     }
   }
 
@@ -449,6 +451,10 @@
 })();
 
 (() => {
+  // Assets live next to this script, not next to the page, so the localized
+  // copies under /en/ and /de/ resolve them too.
+  const ASSET_BASE = new URL(".", document.currentScript?.src || location.href);
+
   const GALLERY_IMAGES = {
     nextcell: [
       "Captura de pantalla 2026-09-11 121509.png",
@@ -497,7 +503,7 @@
     const slides = images.map((file, i) => {
       const img = document.createElement("img");
       img.className = "project-media-slide";
-      img.src = `img/${project}/${encodeURIComponent(file)}`;
+      img.src = new URL(`img/${project}/${encodeURIComponent(file)}`, ASSET_BASE).href;
       img.alt = `Captura ${i + 1} de ${images.length} de ${project}`;
       img.loading = "lazy";
       slidesWrap.appendChild(img);
