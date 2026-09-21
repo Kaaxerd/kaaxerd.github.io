@@ -56,16 +56,23 @@
     const gridStyle = getComputedStyle(grid);
     const gap = parseFloat(gridStyle.columnGap || gridStyle.gap) || 0;
     const paddingBottom = parseFloat(slideStyle.paddingBottom) || 0;
+    const paddingTop = parseFloat(slideStyle.paddingTop) || 0;
 
-    const slideRect = slide.getBoundingClientRect();
+    const content = grid.parentElement;
     const gridRect = grid.getBoundingClientRect();
     const availableWidth = gridRect.width;
-    const availableHeight = slideRect.bottom - gridRect.top - paddingBottom;
+    // Measure the space left by everything except the grid, so the result does
+    // not depend on the size the grid happens to have right now.
+    const siblingsHeight = content.getBoundingClientRect().height - gridRect.height;
+    const viewportHeight = Math.min(slide.clientHeight, window.innerHeight);
+    const availableHeight = viewportHeight - paddingTop - paddingBottom - siblingsHeight;
+    if (availableHeight <= 0) return;
 
     const MIN_SIZE = 44;
     const MAX_SIZE = 112;
+    const SIZE_TOLERANCE = 0.95;
 
-    let best = null;
+    const candidates = [];
     for (let c = 1; c <= n; c++) {
       const rows = Math.ceil(n / c);
       const itemW = (availableWidth - gap * (c - 1)) / c;
@@ -73,29 +80,20 @@
       const size = Math.min(itemW, itemH);
       if (size <= 0) continue;
       const lastRow = n - c * (rows - 1);
-      const unevenness = c - lastRow;
-      const candidate = { c, rows, size, unevenness };
-
-      if (!best) {
-        best = candidate;
-        continue;
-      }
-
-      const bestFits = best.size >= MIN_SIZE;
-      const candFits = size >= MIN_SIZE;
-
-      if (candFits && !bestFits) {
-        best = candidate;
-      } else if (candFits === bestFits) {
-        if (candidate.unevenness < best.unevenness) {
-          best = candidate;
-        } else if (candidate.unevenness === best.unevenness && candidate.size > best.size) {
-          best = candidate;
-        }
-      }
+      candidates.push({ c, rows, size, effective: Math.min(size, MAX_SIZE), unevenness: c - lastRow });
     }
+    if (!candidates.length) return;
 
-    if (!best) return;
+    const fitting = candidates.filter((cand) => cand.size >= MIN_SIZE);
+    const pool = fitting.length ? fitting : candidates;
+    const bestEffective = Math.max(...pool.map((cand) => cand.effective));
+    const best = pool
+      .filter((cand) => cand.effective >= bestEffective * SIZE_TOLERANCE)
+      .reduce((a, b) => {
+        if (b.unevenness !== a.unevenness) return b.unevenness < a.unevenness ? b : a;
+        if (b.effective !== a.effective) return b.effective > a.effective ? b : a;
+        return b.size > a.size ? b : a;
+      });
 
     const { c, rows } = best;
     const width = Math.floor(Math.min((availableWidth - gap * (c - 1)) / c, MAX_SIZE)) - 1;
@@ -116,12 +114,23 @@
     });
   }
 
+  const tfgPanel = document.getElementById("project-tfg");
+  const narrowQuery = window.matchMedia("(max-width: 900px)");
+
   function updateNavOpacity() {
     if (!sectionNav || !hero) return;
     const heroHeight = hero.offsetHeight || 1;
     const progress = Math.min(Math.max(window.scrollY / heroHeight, 0), 1);
-    sectionNav.style.opacity = String(progress);
-    sectionNav.style.pointerEvents = progress > 0.1 ? "auto" : "none";
+    let opacity = progress;
+    if (tfgPanel && narrowQuery.matches) {
+      // The nav rail cuts across this slide's text on narrow screens, so fade
+      // it out while the slide is on screen.
+      const rect = tfgPanel.getBoundingClientRect();
+      const visible = Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0);
+      opacity *= 1 - Math.min(Math.max(visible / (window.innerHeight || 1), 0), 1);
+    }
+    sectionNav.style.opacity = String(opacity);
+    sectionNav.style.pointerEvents = opacity > 0.1 ? "auto" : "none";
     if (langFlagsPreview) {
       langFlagsPreview.style.opacity = String(1 - progress);
     }
@@ -156,6 +165,9 @@
         requestAnimationFrame(step);
       } else {
         animating = false;
+        panels.forEach((panel, i) => {
+          if (i !== current) panel.scrollTop = 0;
+        });
       }
     }
 
@@ -165,7 +177,29 @@
   function refreshLayout() {
     layoutTechGrid();
     computeTargets();
+    if (!animating && targets.length) {
+      const index = Math.min(current, targets.length - 1);
+      if (Math.abs(window.scrollY - targets[index]) > 1) window.scrollTo(0, targets[index]);
+    }
     updateNavOpacity();
+  }
+
+  function syncCurrent() {
+    if (animating || !targets.length) return;
+    const y = window.scrollY;
+    let index = 0;
+    let bestDistance = Infinity;
+    targets.forEach((target, i) => {
+      const distance = Math.abs(target - y);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        index = i;
+      }
+    });
+    if (index !== current) {
+      current = index;
+      updateActiveNav(current);
+    }
   }
 
   let resizeQueued = false;
@@ -182,7 +216,39 @@
   updateActiveNav(current);
   window.addEventListener("resize", queueRefreshLayout);
   window.addEventListener("load", refreshLayout);
-  window.addEventListener("scroll", updateNavOpacity, { passive: true });
+  window.addEventListener(
+    "scroll",
+    () => {
+      updateNavOpacity();
+      syncCurrent();
+    },
+    { passive: true }
+  );
+
+  // Returns the nearest ancestor that can still scroll in the dragged
+  // direction, so inner scrollers (galleries, long slides, the popover) keep
+  // their native scrolling while the page itself stays snapped.
+  function scrollableAncestor(node, delta) {
+    let el = node instanceof Element ? node : null;
+    while (el && el !== document.body && el !== document.documentElement) {
+      const overflowY = getComputedStyle(el).overflowY;
+      if (
+        (overflowY === "auto" || overflowY === "scroll") &&
+        el.scrollHeight - el.clientHeight > 1
+      ) {
+        const canScrollDown = el.scrollTop + el.clientHeight < el.scrollHeight - 1;
+        const canScrollUp = el.scrollTop > 1;
+        if (delta > 0 ? canScrollDown : canScrollUp) return el;
+      }
+      el = el.parentElement;
+    }
+    return null;
+  }
+
+  // A fresh scroll gesture is required to leave a slide once its inner content
+  // has been scrolled to the end.
+  const INNER_SCROLL_COOLDOWN = 250;
+  let lastInnerScroll = 0;
 
   function openDialog() {
     return document.querySelector("dialog[open], [popover]:popover-open");
@@ -203,30 +269,76 @@
         if (!dialog.contains(e.target)) e.preventDefault();
         return;
       }
+      if (scrollableAncestor(e.target, e.deltaY)) {
+        lastInnerScroll = performance.now();
+        return;
+      }
       e.preventDefault();
       if (animating) return;
+      if (performance.now() - lastInnerScroll < INNER_SCROLL_COOLDOWN) return;
       if (e.deltaY > 0) animateTo(current + 1);
       else if (e.deltaY < 0) animateTo(current - 1);
     },
     { passive: false }
   );
 
+  const SWIPE_THRESHOLD = 40;
   let touchStartY = null;
+  let touchNative = false;
+  let touchMulti = false;
+
   window.addEventListener(
     "touchstart",
     (e) => {
-      touchStartY = e.touches[0].clientY;
+      touchMulti = e.touches.length > 1;
+      touchNative = false;
+      touchStartY = touchMulti ? null : e.touches[0].clientY;
     },
     { passive: true }
   );
 
   window.addEventListener(
+    "touchmove",
+    (e) => {
+      if (touchMulti || touchStartY === null) return;
+      if (e.touches.length > 1) {
+        touchMulti = true;
+        return;
+      }
+      const delta = touchStartY - e.touches[0].clientY;
+      const dialog = openDialog();
+      if (dialog && !dialog.contains(e.target)) {
+        if (e.cancelable) e.preventDefault();
+        touchNative = true;
+        return;
+      }
+      if (scrollableAncestor(e.target, delta)) {
+        touchNative = true;
+        return;
+      }
+      if (touchNative) {
+        // The inner scroller just hit its end: restart the gesture from here so
+        // dragging further still moves to the next panel.
+        touchNative = false;
+        touchStartY = e.touches[0].clientY;
+      }
+      if (e.cancelable) e.preventDefault();
+    },
+    { passive: false }
+  );
+
+  window.addEventListener(
     "touchend",
     (e) => {
-      if (touchStartY === null || animating || isDialogOpen()) return;
-      const delta = touchStartY - e.changedTouches[0].clientY;
+      const startY = touchStartY;
+      const native = touchNative;
+      const multi = touchMulti;
       touchStartY = null;
-      if (Math.abs(delta) < 50) return;
+      touchNative = false;
+      touchMulti = false;
+      if (startY === null || native || multi || animating || isDialogOpen()) return;
+      const delta = startY - e.changedTouches[0].clientY;
+      if (Math.abs(delta) < SWIPE_THRESHOLD) return;
       if (delta > 0) animateTo(current + 1);
       else animateTo(current - 1);
     },
@@ -270,7 +382,7 @@
   if (!popover || !opener) return;
   const arrow = popover.querySelector(".work-popover-arrow");
 
-  const compactQuery = window.matchMedia("(max-width: 29rem), (max-height: 22rem)");
+  const compactQuery = window.matchMedia("(max-width: 900px), (max-height: 22rem)");
 
   function positionPopover() {
     if (compactQuery.matches) {
