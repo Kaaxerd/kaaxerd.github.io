@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://kaaxerd.github.io/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://kaaxerd.github.io/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://kaaxerd.github.io/en/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://kaaxerd.github.io/de/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://kaaxerd.github.io/"/>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://kaaxerd.github.io/tfg/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://kaaxerd.github.io/tfg/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://kaaxerd.github.io/en/tfg/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://kaaxerd.github.io/de/tfg/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://kaaxerd.github.io/tfg/"/>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+  <!-- TODO i18n: al traducir /en/ y /de/, quitarles la meta robots noindex y anadir aqui
+       sus <url> (https://kaaxerd.github.io/en/, /en/tfg/, /de/, /de/tfg/). -->
 </urlset>
