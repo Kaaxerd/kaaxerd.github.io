@@ -1286,64 +1286,6 @@ a {
   font-weight: 700;
 }
 
-.language-level {
-  padding: 0.3rem 0.85rem;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--accent) 15%, transparent);
-  color: var(--accent);
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-.language-stat {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  width: 100%;
-  max-width: 170px;
-}
-
-.language-stat-label {
-  font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  color: var(--muted-foreground);
-}
-
-.language-stat-bar {
-  position: relative;
-  flex: 1;
-  height: 10px;
-  border-radius: 2px;
-  background: color-mix(in srgb, var(--foreground) 12%, transparent);
-  overflow: hidden;
-}
-
-.language-stat-bar::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: repeating-linear-gradient(
-    90deg,
-    var(--card) 0 2px,
-    transparent 2px calc(100% / 6)
-  );
-}
-
-.language-stat-fill {
-  display: block;
-  height: 100%;
-  width: var(--fill, 0%);
-  background: var(--accent);
-}
-
-.language-desc {
-  margin: 0;
-  font-size: 0.8rem;
-  color: var(--muted-foreground);
-  line-height: 1.5;
-}
-
 @media (max-width: 900px) {
   .languages-grid {
     grid-template-columns: 1fr;
@@ -1354,14 +1296,10 @@ a {
 
   .language-item {
     display: grid;
-    grid-template-columns: auto 1fr auto;
-    grid-template-areas:
-      "flag name level"
-      "flag stat stat"
-      "desc desc desc";
+    grid-template-columns: auto 1fr;
+    grid-template-areas: "flag name";
     align-items: center;
     column-gap: 0.85rem;
-    row-gap: 0.4rem;
     padding: 0;
     text-align: left;
   }
@@ -1374,22 +1312,6 @@ a {
   .language-name {
     grid-area: name;
     font-size: 1rem;
-  }
-
-  .language-level {
-    grid-area: level;
-    justify-self: end;
-  }
-
-  .language-stat {
-    grid-area: stat;
-    max-width: none;
-  }
-
-  .language-desc {
-    grid-area: desc;
-    font-size: 0.75rem;
-    line-height: 1.45;
   }
 }
 
