@@ -113,6 +113,13 @@
   box-sizing: border-box;
 }
 
+:root {
+  /* Shared easing family: same curve as the scroll-snap animation in
+     script.js, reused everywhere something settles into place (hero boot,
+     project tilt, timeline draw) so all motion reads as one system. */
+  --ease-engine: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
 html {
   overscroll-behavior-y: none;
 }
@@ -426,6 +433,130 @@ a.lang-flag-link:focus-visible {
   border-color: var(--accent);
 }
 
+/* Hero boot sequence: plays once on load, for everyone by default. The
+   viewport floor fades in first, the gizmo lands on top of it, then the text
+   arrives last. Each rule only sets a "from" keyframe so it animates in from
+   that state to the element's normal resting style, and fill-mode is
+   "backwards" only (never "forwards"), so once the animation ends the
+   element reverts to being governed by its ordinary CSS/inline styles -
+   which matters for the gizmo, since the mouse-tilt script in script.js
+   drives its transform afterwards. */
+.hero-viewport {
+  animation-name: hero-viewport-boot;
+  animation-duration: 0.7s;
+  animation-timing-function: var(--ease-engine);
+  animation-fill-mode: backwards;
+}
+
+.viewport-gizmo {
+  animation-name: hero-gizmo-boot;
+  animation-duration: 0.5s;
+  animation-delay: 0.25s;
+  animation-timing-function: var(--ease-engine);
+  animation-fill-mode: backwards;
+}
+
+.hero-name {
+  animation-name: hero-text-boot;
+  animation-duration: 0.55s;
+  animation-delay: 0.35s;
+  animation-timing-function: var(--ease-engine);
+  animation-fill-mode: backwards;
+}
+
+.hero-title,
+.hero-location {
+  animation-name: hero-text-boot;
+  animation-duration: 0.55s;
+  animation-delay: 0.45s;
+  animation-timing-function: var(--ease-engine);
+  animation-fill-mode: backwards;
+}
+
+.hero-social {
+  animation-name: hero-text-boot;
+  animation-duration: 0.55s;
+  animation-delay: 0.55s;
+  animation-timing-function: var(--ease-engine);
+  animation-fill-mode: backwards;
+}
+
+@keyframes hero-viewport-boot {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes hero-gizmo-boot {
+  from {
+    opacity: 0;
+    transform: scale(0.4) rotate(-35deg);
+  }
+}
+
+@keyframes hero-text-boot {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+/* The screen powers on from black, like the viewport itself is booting -
+   sits above everything else in the hero, then fades away for good. Resting
+   opacity is 0 (not driven by the animation's fill-mode, which is
+   "backwards" only) so if this animation is ever overridden to not run, the
+   overlay defaults to invisible instead of blacking out the hero. */
+.hero-boot-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  animation-name: hero-boot-overlay-fade;
+  animation-duration: 1s;
+  animation-timing-function: var(--ease-engine);
+  animation-fill-mode: backwards;
+}
+
+@keyframes hero-boot-overlay-fade {
+  from {
+    opacity: 1;
+  }
+}
+
+/* Reduced motion: drop every transform - scale, rotate, translate - and
+   drop the staggering, but keep the fades themselves close to full length.
+   A plain crossfade isn't the kind of motion prefers-reduced-motion exists
+   to avoid (that's parallax, scaling, spinning, large-scale movement), so
+   cutting it down to a near-instant blip would just make it invisible
+   without actually helping anyone. The overlay keeps its own fade-out
+   keyframe (unchanged direction) rather than the fade-in one shared by the
+   other elements. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-boot-overlay {
+    animation-duration: 0.8s;
+  }
+
+  .hero-viewport,
+  .viewport-gizmo,
+  .hero-name,
+  .hero-title,
+  .hero-location,
+  .hero-social {
+    animation-name: hero-boot-fade-only;
+    animation-duration: 0.6s;
+    animation-delay: 0s;
+    animation-timing-function: ease-out;
+  }
+}
+
+@keyframes hero-boot-fade-only {
+  from {
+    opacity: 0;
+  }
+}
+
 .cv-link {
   display: inline-flex;
   align-items: center;
@@ -490,17 +621,58 @@ a {
 
 .tech-goal-highlight {
   color: var(--accent);
+  animation-name: tech-goal-point-in;
+  animation-duration: 0.8s;
+  animation-timing-function: var(--ease-engine);
+  animation-fill-mode: backwards;
+  animation-play-state: paused;
+}
+
+.tech-goal-list.is-revealed .tech-goal-highlight {
+  animation-play-state: running;
+}
+
+.tech-goal-list.is-revealed .tech-goal-highlight:nth-child(2) {
+  animation-delay: 0.18s;
+}
+
+.tech-goal-list.is-revealed .tech-goal-highlight:nth-child(3) {
+  animation-delay: 0.36s;
+}
+
+@keyframes tech-goal-point-in {
+  from {
+    opacity: 0;
+    transform: translateX(-140px);
+  }
+}
+
+/* Kept as a real (if shorter) horizontal slide rather than swapped for a
+   plain fade: a modest one-time translateX isn't the large-scale/parallax
+   motion prefers-reduced-motion targets, and swapping to fade-only made the
+   staggered vertical list order read as top-to-bottom motion instead. */
+@media (prefers-reduced-motion: reduce) {
+  .tech-goal-highlight {
+    animation-name: tech-goal-point-in-short;
+    animation-duration: 0.45s;
+  }
+}
+
+@keyframes tech-goal-point-in-short {
+  from {
+    opacity: 0;
+    transform: translateX(-70px);
+  }
 }
 
 .tech-goal-list {
   display: inline-flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.5rem;
   margin: 0;
   padding: 0;
-  list-style: disc;
-  list-style-position: inside;
+  list-style: none;
   font-size: clamp(1.4rem, 1.5vw + 1.1rem, 2.25rem);
   font-weight: 700;
 }
@@ -726,6 +898,7 @@ a {
   align-items: center;
   gap: 0.6rem;
   width: 100%;
+  perspective: 900px;
 }
 
 .project-media {
@@ -739,6 +912,14 @@ a {
   border: 1px dashed var(--border);
   background: var(--card);
   overflow: hidden;
+  transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transition: transform 0.4s var(--ease-engine);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-media {
+    transition-duration: 0.15s;
+  }
 }
 
 .project-media-icon {
@@ -1000,6 +1181,29 @@ a {
   fill: none;
   stroke: var(--border);
   stroke-width: 2;
+}
+
+/* The path only gets dashed and hidden once script.js has measured its real
+   length and added .js-draw - so if JS fails, it just stays a plain solid
+   stroke, same as before. Reveal happens once when the section is reached,
+   not per point, matching the reveal already used for .project-title. Runs
+   for everyone by default; reduced motion just makes it quick instead of
+   skipping it, same treatment as the hero boot. */
+.timeline.js-draw .timeline-curve path {
+  stroke-dasharray: var(--path-length, 0);
+  stroke-dashoffset: var(--path-length, 0);
+  transition: stroke-dashoffset 1.4s var(--ease-engine);
+}
+
+.timeline.js-draw.is-drawn .timeline-curve path {
+  stroke-dashoffset: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timeline.js-draw .timeline-curve path {
+    transition-duration: 0.9s;
+    transition-timing-function: ease-out;
+  }
 }
 
 .timeline-points {
@@ -1329,6 +1533,10 @@ a {
   font-weight: 700;
   letter-spacing: -0.01em;
   white-space: nowrap;
+}
+
+.cv-title-accent {
+  color: var(--accent);
 }
 
 .cv-content .cv-link {

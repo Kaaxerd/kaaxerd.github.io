@@ -25,6 +25,52 @@
     titleTargets.forEach((el) => titleObserver.observe(el));
   }
 
+  // "Nuevos / Refrescantes / Entretenidos": each one is paused mid-animation
+  // (off to the right, invisible) via CSS until this class lands, then they
+  // play in from the right and settle centered, staggered by nth-child.
+  const goalList = document.querySelector(".tech-goal-list");
+  if (goalList && "IntersectionObserver" in window) {
+    const goalObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-revealed");
+            goalObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+    goalObserver.observe(goalList);
+  }
+
+  // Draw-in for the timeline curves: measure the real path length so the
+  // dash pattern matches exactly, then reveal each one once when its section
+  // is reached. Runs for everyone; the CSS shortens it under reduced motion
+  // instead of skipping it, same as the hero boot.
+  const timelines = Array.from(document.querySelectorAll(".timeline"));
+  if (timelines.length && "IntersectionObserver" in window) {
+    timelines.forEach((timeline) => {
+      const path = timeline.querySelector(".timeline-curve path");
+      if (!path) return;
+      timeline.style.setProperty("--path-length", String(path.getTotalLength()));
+      timeline.classList.add("js-draw");
+    });
+
+    const timelineObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-drawn");
+            timelineObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.4 }
+    );
+    timelines.forEach((timeline) => timelineObserver.observe(timeline));
+  }
+
   const duration = 900;
   const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
@@ -634,5 +680,36 @@
     targetX = 0;
     targetY = 0;
     if (!raf) raf = requestAnimationFrame(tick);
+  });
+})();
+
+(() => {
+  // Same tilt idea as the hero gizmo, echoed on each project thumbnail: the
+  // card responds to the mouse like a small viewport rather than a static
+  // photo. Skipped on touch, where hover doesn't apply; toned down (not
+  // removed) under reduced motion, same treatment as the rest of the boot
+  // sequence - a few degrees of rotation isn't the large-scale parallax
+  // motion that preference exists to avoid.
+  if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
+  const MAX_TILT_DEG = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 2 : 6;
+
+  document.querySelectorAll(".project-media").forEach((media) => {
+    media.addEventListener(
+      "mousemove",
+      (e) => {
+        const rect = media.getBoundingClientRect();
+        const px = (e.clientX - rect.left) / rect.width - 0.5;
+        const py = (e.clientY - rect.top) / rect.height - 0.5;
+        media.style.setProperty("--tilt-x", `${(-py * MAX_TILT_DEG).toFixed(2)}deg`);
+        media.style.setProperty("--tilt-y", `${(px * MAX_TILT_DEG).toFixed(2)}deg`);
+      },
+      { passive: true }
+    );
+
+    media.addEventListener("mouseleave", () => {
+      media.style.setProperty("--tilt-x", "0deg");
+      media.style.setProperty("--tilt-y", "0deg");
+    });
   });
 })();
