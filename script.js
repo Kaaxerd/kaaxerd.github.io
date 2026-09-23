@@ -306,6 +306,42 @@
     return Boolean(openDialog());
   }
 
+  // Trackpads and free-spin wheels emit a long inertial stream of wheel events
+  // for a single flick, often outlasting the slide animation. The whole stream
+  // is treated as one gesture that may change at most one slide; a new gesture
+  // starts after a quiet gap, a direction flip, or a clear acceleration (the
+  // user pushed again while the inertia was decaying).
+  const WHEEL_GESTURE_GAP = 180;
+  const WHEEL_MIN_DELTA = 4;
+  const WHEEL_ACCEL_RATIO = 2;
+  const WHEEL_ACCEL_MIN = 15;
+  let lastWheelTime = -Infinity;
+  let lastWheelMagnitude = 0;
+  let lastWheelSign = 0;
+  let wheelGestureUsed = false;
+
+  function normalizedWheelDelta(e) {
+    if (e.deltaMode === 1) return e.deltaY * 16;
+    if (e.deltaMode === 2) return e.deltaY * window.innerHeight;
+    return e.deltaY;
+  }
+
+  // Returns true when this event begins a new gesture.
+  function trackWheelGesture(delta) {
+    const now = performance.now();
+    const magnitude = Math.abs(delta);
+    const sign = Math.sign(delta);
+    const isNew =
+      now - lastWheelTime > WHEEL_GESTURE_GAP ||
+      (sign !== 0 && sign !== lastWheelSign) ||
+      magnitude > Math.max(lastWheelMagnitude * WHEEL_ACCEL_RATIO, lastWheelMagnitude + WHEEL_ACCEL_MIN);
+    lastWheelTime = now;
+    lastWheelMagnitude = magnitude;
+    if (sign !== 0) lastWheelSign = sign;
+    if (isNew) wheelGestureUsed = false;
+    return isNew;
+  }
+
   window.addEventListener(
     "wheel",
     (e) => {
@@ -317,15 +353,26 @@
         if (!dialog.contains(e.target)) e.preventDefault();
         return;
       }
-      if (scrollableAncestor(e.target, e.deltaY)) {
+      const delta = normalizedWheelDelta(e);
+      trackWheelGesture(delta);
+      if (scrollableAncestor(e.target, delta)) {
         lastInnerScroll = performance.now();
+        // The gesture that scrolled inner content must not also flip the slide.
+        wheelGestureUsed = true;
         return;
       }
       e.preventDefault();
-      if (animating) return;
+      // Gestures starting mid-animation are swallowed too, so their inertial
+      // tail can't fire a delayed second jump once the animation ends.
+      if (animating) {
+        wheelGestureUsed = true;
+        return;
+      }
+      if (wheelGestureUsed) return;
       if (performance.now() - lastInnerScroll < INNER_SCROLL_COOLDOWN) return;
-      if (e.deltaY > 0) animateTo(current + 1);
-      else if (e.deltaY < 0) animateTo(current - 1);
+      if (Math.abs(delta) < WHEEL_MIN_DELTA) return;
+      wheelGestureUsed = true;
+      animateTo(current + (delta > 0 ? 1 : -1));
     },
     { passive: false }
   );
@@ -502,19 +549,9 @@
   const ASSET_BASE = new URL(".", document.currentScript?.src || location.href);
 
   const GALLERY_IMAGES = {
-    nextcell: [
-      "Captura de pantalla 2026-09-11 121509.png",
-      "Captura de pantalla 2026-09-11 121542.png",
-      "Captura de pantalla 2026-09-11 121613.png",
-      "Captura de pantalla 2026-09-11 121644.png",
-    ],
+    nextcell: ["01.webp", "02.webp", "03.webp", "04.webp"],
     fireball: [],
-    "escape-light-dungeon": [
-      "Captura de pantalla 2026-09-11 124755.png",
-      "Captura de pantalla 2026-09-11 124834.png",
-      "Captura de pantalla 2026-09-11 124859.png",
-      "Captura de pantalla 2026-09-11 124928.png",
-    ],
+    "escape-light-dungeon": ["01.webp", "02.webp", "03.webp", "04.webp"],
     "patata-o-plomo": [],
     "player-vs-cubos": [],
     tfg: [],

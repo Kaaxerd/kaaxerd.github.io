@@ -259,6 +259,57 @@ a.lang-flag-link:focus-visible {
   transform: scale(0.55);
 }
 
+/* Mid-width screens: the labelled rail would eat into the slides, so it
+   collapses to dots and reveals the labels on a panel only while hovered. */
+@media (min-width: 1025px) and (max-width: 1480px) {
+  .section-nav {
+    right: 1rem;
+    width: 1.5rem;
+  }
+
+  .section-nav .section-nav-label {
+    position: absolute;
+    right: calc(100% + 0.6rem);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+  }
+
+  /* One solid panel behind the whole list, so the labels never mix with
+     the slide text underneath. */
+  .section-nav::after {
+    content: "";
+    position: absolute;
+    top: -1rem;
+    bottom: -1rem;
+    right: -0.75rem;
+    width: 13rem;
+    z-index: -1;
+    border-radius: 8px;
+    background: var(--background);
+    box-shadow: 0 0 2rem 1rem var(--background);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+  }
+
+  .section-nav:hover::after,
+  .section-nav:focus-within::after {
+    opacity: 1;
+  }
+
+  .section-nav:hover .section-nav-label,
+  .section-nav:focus-within .section-nav-label {
+    opacity: 1;
+  }
+
+  .section-nav:hover .section-nav-link--sub .section-nav-label,
+  .section-nav:focus-within .section-nav-link--sub .section-nav-label {
+    opacity: 0.75;
+  }
+}
+
 @media (max-width: 1024px) {
   .section-nav {
     right: 1rem;
@@ -656,6 +707,28 @@ a {
   display: none;
 }
 
+/* Wide slides would otherwise run under the fixed section-nav. Its footprint
+   is reserved on both sides so the content stays centred on the page. */
+:root {
+  --nav-footprint: 3.5rem;
+}
+
+@media (min-width: 1481px) {
+  :root {
+    --nav-footprint: calc(1.75rem + 9rem + 1.25rem);
+  }
+}
+
+@media (min-width: 1025px) {
+  .slide .project-layout {
+    max-width: min(1100px, 100vw - 2 * var(--nav-footprint));
+  }
+
+  .slide .timeline-content {
+    max-width: min(1200px, 100vw - 2 * var(--nav-footprint));
+  }
+}
+
 .tech-content {
   max-width: 900px;
   width: 100%;
@@ -761,26 +834,11 @@ a {
   box-shadow: none;
 }
 
-.tech-icon,
 .tech-icon-duo {
+  flex-shrink: 0;
   width: clamp(1.4rem, 5vmin, 3rem);
   height: clamp(1.4rem, 5vmin, 3rem);
   color: #ffffff;
-}
-
-.tech-icon {
-  background-color: transparent;
-  background-image: var(--icon-src);
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-  -webkit-mask-image: none;
-  mask-image: none;
-  filter: brightness(0) invert(1);
-}
-
-.tech-icon-duo {
-  flex-shrink: 0;
 }
 
 .tech-item span {
@@ -1082,34 +1140,10 @@ a {
   color: var(--muted-foreground);
 }
 
-.project-tech-icon,
 .project-tech-icon-duo {
+  flex-shrink: 0;
   width: 1.75rem;
   height: 1.75rem;
-}
-
-.project-tech-icon-duo {
-  flex-shrink: 0;
-}
-
-.tech-icon {
-  display: inline-block;
-  flex-shrink: 0;
-}
-
-.project-tech-icon {
-  display: inline-block;
-  flex-shrink: 0;
-  background-color: currentColor;
-  -webkit-mask-image: var(--icon-src);
-  mask-image: var(--icon-src);
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  mask-position: center;
-  -webkit-mask-size: contain;
-  mask-size: contain;
-  mask-mode: alpha;
 }
 
 .project-tech-icon-wrap {
@@ -1217,6 +1251,7 @@ a {
   position: relative;
   width: 100%;
   aspect-ratio: 1200 / 420;
+  container-type: inline-size;
 }
 
 .timeline-curve {
@@ -1269,7 +1304,9 @@ a {
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
-  width: clamp(200px, 22vw, 260px);
+  /* Sized off the timeline (not the viewport) so the outer cards, centred
+     on 12.5% / 87.5%, never spill past the timeline's own edges. */
+  width: clamp(160px, 24cqw, 260px);
   transform: translate(-50%, -50%);
 }
 
@@ -1580,10 +1617,17 @@ a {
 
 .cv-title {
   margin: 0;
-  font-size: clamp(1rem, 5vw, 3.5rem);
+  font-size: clamp(2rem, 5vw, 3.5rem);
   font-weight: 700;
+  line-height: 1.15;
   letter-spacing: -0.01em;
-  white-space: nowrap;
+  text-wrap: balance;
+}
+
+@media (min-width: 901px) {
+  .cv-title {
+    white-space: nowrap;
+  }
 }
 
 .cv-title-accent {
