@@ -6,7 +6,7 @@
 
   document.documentElement.classList.add("has-title-reveal");
 
-  const panels = Array.from(document.querySelectorAll(".hero, .slide"));
+  let panels = Array.from(document.querySelectorAll(".hero, .slide"));
   if (!panels.length) return;
 
   const titleTargets = document.querySelectorAll(".project-title");
@@ -44,33 +44,6 @@
     goalObserver.observe(goalList);
   }
 
-  // Draw-in for the timeline curves: measure the real path length so the
-  // dash pattern matches exactly, then reveal each one once when its section
-  // is reached. Runs for everyone; the CSS shortens it under reduced motion
-  // instead of skipping it, same as the hero boot.
-  const timelines = Array.from(document.querySelectorAll(".timeline"));
-  if (timelines.length && "IntersectionObserver" in window) {
-    timelines.forEach((timeline) => {
-      const path = timeline.querySelector(".timeline-curve path");
-      if (!path) return;
-      timeline.style.setProperty("--path-length", String(path.getTotalLength()));
-      timeline.classList.add("js-draw");
-    });
-
-    const timelineObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-drawn");
-            timelineObserver.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.4 }
-    );
-    timelines.forEach((timeline) => timelineObserver.observe(timeline));
-  }
-
   const duration = 900;
   const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
@@ -80,6 +53,9 @@
   const langFlagsPreview = document.querySelector(".lang-flags-preview");
 
   let targets = [];
+  // Panel index each nav link points at, derived from its href (-1 while the
+  // target is missing), so reordering slides never desyncs the nav.
+  let navIndices = [];
   let current = 0;
   let maxReached = 0;
   let animating = false;
@@ -88,6 +64,14 @@
     const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
     targets = panels.map((panel) => panel.offsetTop);
     if (maxScroll > targets[targets.length - 1] + 10) targets.push(maxScroll);
+  }
+
+  function computeNavIndices() {
+    navIndices = navLinks.map((link) => {
+      const id = decodeURIComponent((link.getAttribute("href") || "").replace(/^#/, ""));
+      const target = id ? document.getElementById(id) : null;
+      return target ? panels.findIndex((panel) => panel === target || panel.contains(target)) : -1;
+    });
   }
 
   function layoutTechGrid() {
@@ -160,21 +144,11 @@
     });
   }
 
-  const tfgPanel = document.getElementById("project-tfg");
-  const narrowQuery = window.matchMedia("(max-width: 900px)");
-
   function updateNavOpacity() {
     if (!sectionNav || !hero) return;
     const heroHeight = hero.offsetHeight || 1;
     const progress = Math.min(Math.max(window.scrollY / heroHeight, 0), 1);
-    let opacity = progress;
-    if (tfgPanel && narrowQuery.matches) {
-      // The nav rail cuts across this slide's text on narrow screens, so fade
-      // it out while the slide is on screen.
-      const rect = tfgPanel.getBoundingClientRect();
-      const visible = Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0);
-      opacity *= 1 - Math.min(Math.max(visible / (window.innerHeight || 1), 0), 1);
-    }
+    const opacity = progress;
     sectionNav.style.opacity = String(opacity);
     sectionNav.style.pointerEvents = opacity > 0.1 ? "auto" : "none";
     if (langFlagsPreview) {
@@ -187,10 +161,39 @@
   function updateActiveNav(index) {
     const navIndex = Math.min(index, panels.length - 1);
     if (navIndex > maxReached) maxReached = navIndex;
-    navLinks.forEach((link) => {
-      const linkIndex = Number(link.dataset.index);
-      link.classList.toggle("active", linkIndex === navIndex);
-      link.classList.toggle("revealed", linkIndex <= maxReached);
+
+    // Slides without their own row (e.g. a continuation slide) select the
+    // nearest preceding linked slide.
+    let activeLink = null;
+    let activeIndex = -1;
+    navLinks.forEach((link, i) => {
+      const linkIndex = navIndices[i];
+      if (linkIndex >= 0 && linkIndex <= navIndex && linkIndex > activeIndex) {
+        activeIndex = linkIndex;
+        activeLink = link;
+      }
+    });
+
+    let parent = null;
+    let lastChild = null;
+    navLinks.forEach((link, i) => {
+      const linkIndex = navIndices[i];
+      const revealed = linkIndex >= 0 && linkIndex <= maxReached;
+      const isChild = link.classList.contains("section-nav-link--sub");
+      link.classList.toggle("revealed", revealed);
+      link.classList.toggle("active", link === activeLink);
+      if (link === activeLink) link.setAttribute("aria-current", "true");
+      else link.removeAttribute("aria-current");
+      link.classList.remove("is-branch-end", "is-expanded");
+      if (!isChild) {
+        parent = link;
+        lastChild = null;
+      } else if (revealed) {
+        lastChild?.classList.remove("is-branch-end");
+        link.classList.add("is-branch-end");
+        lastChild = link;
+        parent?.classList.add("is-expanded");
+      }
     });
   }
 
@@ -223,8 +226,11 @@
   }
 
   function refreshLayout() {
+    panels = Array.from(document.querySelectorAll(".hero, .slide"));
     layoutTechGrid();
     computeTargets();
+    computeNavIndices();
+    updateActiveNav(current);
     if (!animating && targets.length) {
       const index = Math.min(current, targets.length - 1);
       if (Math.abs(window.scrollY - targets[index]) > 1) window.scrollTo(0, targets[index]);
@@ -466,81 +472,109 @@
   navLinks.forEach((link) => {
     link.addEventListener("click", (e) => {
       e.preventDefault();
-      animateTo(Number(link.dataset.index));
+      const index = navIndices[navLinks.indexOf(link)];
+      if (index >= 0) animateTo(index);
     });
   });
 })();
 
 (() => {
-  const popover = document.getElementById("capgemini-work");
-  const opener = document.querySelector('[popovertarget="capgemini-work"]');
-  if (!popover || !opener) return;
-  const arrow = popover.querySelector(".work-popover-arrow");
+  // Experience/education sequencer: bars can be selected (editor-style
+  // highlight only), the Capgemini track folds its child tracks, and the
+  // playhead sweeps from the start of the ruler to today the first time the
+  // slide is reached, revealing everything as it passes.
+  const sequencer = document.querySelector(".sequencer");
+  if (!sequencer) return;
+  const bars = Array.from(sequencer.querySelectorAll(".seq-bar"));
+  const clock = sequencer.querySelector(".seq-clock-time");
 
-  const compactQuery = window.matchMedia("(max-width: 900px), (max-height: 22rem)");
+  const style = getComputedStyle(sequencer);
+  const start = parseFloat(style.getPropertyValue("--seq-start")) || 2019;
+  const span = parseFloat(style.getPropertyValue("--seq-span")) || 8;
+  const MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
 
-  function positionPopover() {
-    if (compactQuery.matches) {
-      popover.style.removeProperty("left");
-      popover.style.removeProperty("top");
-      return;
-    }
-
-    const btnRect = opener.getBoundingClientRect();
-    const margin = 12;
-    const gap = 10;
-
-    popover.style.left = "0px";
-    popover.style.top = "0px";
-
-    const popRect = popover.getBoundingClientRect();
-
-    let left = btnRect.left;
-    left = Math.min(left, window.innerWidth - popRect.width - margin);
-    left = Math.max(left, margin);
-
-    const spaceBelow = window.innerHeight - btnRect.bottom - gap - margin;
-    const spaceAbove = btnRect.top - gap - margin;
-
-    let top;
-    let placeAbove;
-    if (popRect.height <= spaceBelow || spaceBelow >= spaceAbove) {
-      placeAbove = false;
-      top = btnRect.bottom + gap;
-    } else {
-      placeAbove = true;
-      top = btnRect.top - gap - popRect.height;
-    }
-    top = Math.min(Math.max(top, margin), window.innerHeight - margin - popRect.height);
-
-    popover.style.left = `${left}px`;
-    popover.style.top = `${top}px`;
-
-    if (arrow) {
-      const arrowLeft = Math.min(
-        Math.max(btnRect.left + btnRect.width / 2 - left - 6, 12),
-        popRect.width - 24
-      );
-      arrow.style.left = `${arrowLeft}px`;
-      if (placeAbove) {
-        arrow.style.top = "auto";
-        arrow.style.bottom = "-6px";
-        arrow.style.transform = "rotate(225deg)";
-      } else {
-        arrow.style.top = "-6px";
-        arrow.style.bottom = "auto";
-        arrow.style.transform = "rotate(45deg)";
-      }
-    }
+  const today = new Date();
+  const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+  const todayYear = today.getFullYear() + (today.getMonth() + (today.getDate() - 1) / daysInMonth) / 12;
+  const now = Math.min(Math.max((todayYear - start) / span, 0), 1);
+  sequencer.style.setProperty("--seq-now", now.toFixed(4));
+  if (clock) {
+    clock.dateTime = today.toISOString().slice(0, 10);
+    clock.textContent = `${today.getDate()} ${MONTHS[today.getMonth()]} ${today.getFullYear()}`;
   }
 
-  popover.addEventListener("toggle", (e) => {
-    if (e.newState === "open") positionPopover();
+  function select(bar) {
+    bars.forEach((b) => b.setAttribute("aria-pressed", String(b === bar)));
+  }
+
+  bars.forEach((bar) => {
+    bar.addEventListener("click", () => select(bar));
+    bar.addEventListener("focus", () => select(bar));
+    bar.addEventListener("keydown", (e) => {
+      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+      e.preventDefault();
+      const visible = bars.filter((b) => b.offsetParent !== null);
+      const i = visible.indexOf(bar);
+      const next = visible[(i + (e.key === "ArrowRight" ? 1 : -1) + visible.length) % visible.length];
+      next.focus();
+    });
   });
 
-  window.addEventListener("resize", () => {
-    if (popover.matches(":popover-open")) positionPopover();
+  sequencer.querySelectorAll(".seq-toggle").forEach((toggle) => {
+    const rows = (toggle.getAttribute("aria-controls") || "")
+      .split(/\s+/)
+      .map((id) => document.getElementById(id))
+      .filter(Boolean);
+    toggle.addEventListener("click", () => {
+      const expanded = toggle.getAttribute("aria-expanded") !== "true";
+      toggle.setAttribute("aria-expanded", String(expanded));
+      rows.forEach((row) => {
+        row.hidden = !expanded;
+      });
+    });
   });
+
+  if (!("IntersectionObserver" in window)) return;
+
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const SWEEP_MS = reduced ? 500 : 1600;
+  const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  const revealables = Array.from(sequencer.querySelectorAll(".seq-bar"));
+  const keys = revealables.map(
+    (el) => (parseFloat(getComputedStyle(el).getPropertyValue("--from")) - start) / span
+  );
+
+  sequencer.classList.add("is-armed");
+  sequencer.style.setProperty("--seq-t", "0");
+
+  function sweep() {
+    const startTime = performance.now();
+    function step(time) {
+      const t = Math.min((time - startTime) / SWEEP_MS, 1);
+      const head = now * ease(t);
+      sequencer.style.setProperty("--seq-t", head.toFixed(4));
+      revealables.forEach((el, i) => {
+        if (head >= keys[i]) el.classList.add("is-revealed");
+      });
+      if (t < 1) {
+        requestAnimationFrame(step);
+      } else {
+        revealables.forEach((el) => el.classList.add("is-revealed"));
+        sequencer.style.removeProperty("--seq-t");
+      }
+    }
+    requestAnimationFrame(step);
+  }
+
+  const sweepObserver = new IntersectionObserver(
+    (entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      sweepObserver.disconnect();
+      sweep();
+    },
+    { threshold: 0.4 }
+  );
+  sweepObserver.observe(sequencer);
 })();
 
 (() => {
