@@ -125,7 +125,7 @@ html {
 }
 
 body {
-  font-family: 'Satoshi', sans-serif;
+  font-family: 'Archivo', sans-serif;
   margin: 0;
   padding: 0;
   background: var(--background);
@@ -136,7 +136,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Cabinet Grotesk', sans-serif;
+  font-family: 'Archivo', sans-serif;
 }
 
 .section-nav {
@@ -357,7 +357,7 @@ a.lang-flag-link:focus-visible {
 .hero-content {
   position: relative;
   z-index: 1;
-  max-width: 700px;
+  max-width: 1100px;
   margin: 0 auto;
 }
 
@@ -371,10 +371,50 @@ a.lang-flag-link:focus-visible {
 }
 
 .hero-name {
-  margin: 0 0 0.75rem;
-  font-size: clamp(2rem, 5vw + 1rem, 3.25rem);
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  position: relative;
+  display: inline-block;
+  margin: 0 0 1.25rem;
+  padding: 0.12em 0.3em;
+  font-size: clamp(2.5rem, 6vw + 1rem, 6rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+/* The name is the selected actor in the viewport: an editor selection frame
+   with corner handles, which appears after the text lands, as if clicked. */
+.hero-name::before,
+.hero-name::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  animation-name: hero-select;
+  animation-duration: 0.35s;
+  animation-delay: 1.05s;
+  animation-timing-function: var(--ease-engine);
+  animation-fill-mode: backwards;
+}
+
+.hero-name::before {
+  border: 1.5px solid var(--accent);
+}
+
+.hero-name::after {
+  --handle: 0.45rem;
+  inset: calc(var(--handle) / -2 + 0.75px);
+  background:
+    linear-gradient(var(--accent), var(--accent)) top left / var(--handle) var(--handle) no-repeat,
+    linear-gradient(var(--accent), var(--accent)) top right / var(--handle) var(--handle) no-repeat,
+    linear-gradient(var(--accent), var(--accent)) bottom left / var(--handle) var(--handle) no-repeat,
+    linear-gradient(var(--accent), var(--accent)) bottom right / var(--handle) var(--handle) no-repeat;
+}
+
+@keyframes hero-select {
+  from {
+    opacity: 0;
+  }
 }
 
 .hero-title {
@@ -386,6 +426,16 @@ a.lang-flag-link:focus-visible {
 .hero-title-secondary {
   font-weight: 400;
   opacity: 0.7;
+}
+
+@media (max-width: 640px) {
+  .hero-title-secondary {
+    display: block;
+  }
+
+  .hero-title-sep {
+    display: none;
+  }
 }
 
 .hero-location {
@@ -1248,6 +1298,7 @@ a {
   margin: 0;
   font-size: 0.85rem;
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
   color: var(--accent);
   line-height: 1.4;
 }
