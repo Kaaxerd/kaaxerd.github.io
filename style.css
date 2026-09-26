@@ -1626,7 +1626,7 @@ a {
     position: relative;
     z-index: 1;
     border-right: none;
-    padding: 0.45rem 1.75rem 0.1rem 2.2rem;
+    padding: 0.4rem 1.75rem 0 2.2rem;
     background: var(--card);
   }
 
@@ -1638,8 +1638,11 @@ a {
     padding-left: 3.1rem;
   }
 
+  /* Header and lane share one surface, so a track reads as one row rather
+     than two stripes; the year lines only run where the bar lives. */
   .seq-lane {
     min-height: 1.6rem;
+    background-color: var(--card);
   }
 
   .seq-row--ruler .seq-clock {
@@ -1659,15 +1662,11 @@ a {
   }
 
   .seq-row--group .seq-head {
-    padding-block: 0.45rem;
+    padding-block: 0.35rem;
   }
 
   .seq-track {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: flex-start;
-    column-gap: 0.45rem;
+    gap: 0.05rem;
   }
 
   .seq-track-name {
@@ -1679,7 +1678,6 @@ a {
   }
 
   .seq-track-note {
-    flex-basis: 100%;
     font-size: 0.7rem;
   }
 
@@ -1692,8 +1690,28 @@ a {
     --bar-h: 0.55rem;
   }
 
+  /* Bars are too thin to hold their dates, so the label sits beside the bar
+     on whichever side has more room (script.js sets --label-start). */
   .seq-bar-label {
-    display: none;
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 0.6rem);
+    translate: 0 -50%;
+    overflow: visible;
+    visibility: visible;
+    color: var(--muted-foreground);
+    font-size: 0.68rem;
+    font-variant-numeric: tabular-nums;
+    opacity: 1;
+  }
+
+  .seq-bar--label-start .seq-bar-label {
+    left: auto;
+    right: calc(100% + 0.6rem);
+  }
+
+  .seq-bar[aria-pressed="true"] .seq-bar-label {
+    color: var(--accent);
   }
 
   .seq-bar::before,
@@ -1702,17 +1720,13 @@ a {
     height: 0.4rem;
   }
 
-  /* The task text runs full width above its bar instead of beside it. */
-  .seq-row--sub .seq-lane {
-    display: block;
-    padding-bottom: 1.3rem;
-    background-color: var(--seq-lanes-bg);
+  .seq-row--sub .seq-track-name {
+    font-weight: 500;
   }
 
-  .seq-bar--sub {
-    top: auto;
-    bottom: 0.4rem;
-    translate: none;
+  .seq-row--sub .seq-lane {
+    display: block;
+    min-height: 1.35rem;
   }
 }
 
