@@ -503,6 +503,13 @@
     clock.textContent = `${today.getDate()} ${MONTHS[today.getMonth()]} ${today.getFullYear()}`;
   }
 
+  bars.forEach((bar) => {
+    const props = getComputedStyle(bar);
+    const from = parseFloat(props.getPropertyValue("--from"));
+    const to = parseFloat(props.getPropertyValue("--to"));
+    bar.classList.toggle("seq-bar--label-start", from - start > start + span - to);
+  });
+
   function select(bar) {
     bars.forEach((b) => b.setAttribute("aria-pressed", String(b === bar)));
   }
