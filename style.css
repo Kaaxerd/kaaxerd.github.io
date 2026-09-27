@@ -469,7 +469,7 @@ a.lang-flag-link:focus-visible {
   justify-content: center;
   gap: 0.4rem;
   margin: 0 0 1.25rem;
-  color: var(--muted-foreground);
+  color: color-mix(in srgb, var(--foreground) 65%, var(--background));
   font-size: 0.9rem;
 }
 
