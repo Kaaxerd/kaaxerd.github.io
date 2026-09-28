@@ -1,7 +1,21 @@
 :root {
   --scarlet: #800000;
   --violet: #5B0A91;
-  --text: #FFDE00;
+  --yellow: #FFDE00;
+  --paper: #F6F1F4;
+  --ink: #1E1A22;
+  --green: #12501B;
+
+  /* Portfolio chrome, shared with the main page so the bar reads as the
+     same site rather than a new one. */
+  --site-bg: #14161a;
+  --site-fg: #f4f4f6;
+  --site-accent: #55c3a6;
+  --site-border: #2d3443;
+  --bar-height: 3.5rem;
+  --thesis-bar-height: 2.75rem;
+  --measure: 44rem;
+  --gutter: clamp(1.25rem, 5vw, 3rem);
 }
 
 *,
@@ -12,68 +26,875 @@
 
 body {
   margin: 0;
-  min-height: 100vh;
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  font-family: 'Satoshi', sans-serif;
+  font-family: 'Rubik', sans-serif;
+  font-weight: 400;
   line-height: 1.6;
-  color: var(--text);
-  background: linear-gradient(to right, var(--scarlet) 0 50%, var(--violet) 50% 100%);
+  color: var(--ink);
+  background: var(--paper);
 }
 
-a {
-  color: inherit;
+::selection {
+  color: var(--ink);
+  background: var(--yellow);
 }
 
-.page-header {
-  padding: 1.5rem clamp(1.25rem, 5vw, 3rem);
-}
+/* Site bar */
 
-.back-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  text-decoration: none;
-  opacity: 0.85;
-}
-
-.back-link:hover {
-  opacity: 1;
-}
-
-.back-link svg {
-  width: 1rem;
-  height: 1rem;
-}
-
-.page-main {
-  flex: 1;
+.site-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  height: var(--bar-height);
+  padding: 0 clamp(1rem, 4vw, 2rem);
+  font-family: 'Archivo', sans-serif;
+  color: var(--site-fg);
+  background: var(--site-bg);
+  border-bottom: 1px solid var(--site-border);
+}
+
+/* Same wordmark as the portfolio hero name. */
+.site-name {
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.site-name:hover {
+  color: var(--site-accent);
+}
+
+.site-name:focus-visible {
+  outline: 1.5px solid var(--site-accent);
+  outline-offset: 4px;
+}
+
+.site-name-short {
+  display: none;
+}
+
+.lang-flags {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  gap: 0.125rem;
+}
+
+.lang-flag-link {
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  padding: clamp(2rem, 8vh, 5rem) clamp(1.25rem, 5vw, 3rem);
-  text-align: center;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0.375rem;
+  border-radius: 6px;
+  line-height: 0;
 }
 
-.eyebrow {
+/* Same viewport-selection brackets as the portfolio's language picker. */
+.lang-flag-link[aria-current="true"] {
+  --bracket: 0.5rem;
+  --stroke: 2px;
+  background:
+    linear-gradient(var(--site-accent), var(--site-accent)) top left / var(--bracket) var(--stroke),
+    linear-gradient(var(--site-accent), var(--site-accent)) top left / var(--stroke) var(--bracket),
+    linear-gradient(var(--site-accent), var(--site-accent)) top right / var(--bracket) var(--stroke),
+    linear-gradient(var(--site-accent), var(--site-accent)) top right / var(--stroke) var(--bracket),
+    linear-gradient(var(--site-accent), var(--site-accent)) bottom left / var(--bracket) var(--stroke),
+    linear-gradient(var(--site-accent), var(--site-accent)) bottom left / var(--stroke) var(--bracket),
+    linear-gradient(var(--site-accent), var(--site-accent)) bottom right / var(--bracket) var(--stroke),
+    linear-gradient(var(--site-accent), var(--site-accent)) bottom right / var(--stroke) var(--bracket);
+  background-repeat: no-repeat;
+  border-radius: 0;
+}
+
+a.lang-flag-link {
+  transition: background 0.15s ease;
+}
+
+a.lang-flag-link:hover,
+a.lang-flag-link:focus-visible {
+  background: color-mix(in srgb, var(--site-fg) 16%, transparent);
+}
+
+a.lang-flag-link:focus-visible {
+  outline: 1.5px solid var(--site-accent);
+  outline-offset: 2px;
+}
+
+.lang-flag-link svg {
+  display: block;
+  width: 1.75rem;
+  height: auto;
+}
+
+/* Thesis bar: slides out from under the site bar once the cover scrolls
+   away, carrying the title and the chapter being read. Split like the cover
+   so the Scarlet/Violet seam runs on down the page. */
+
+.thesis-bar {
+  position: fixed;
+  top: var(--bar-height);
+  left: 0;
+  right: 0;
+  z-index: 9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  height: var(--thesis-bar-height);
+  padding: 0 clamp(1rem, 4vw, 2rem);
+  border-bottom: 3px solid var(--yellow);
+  color: var(--yellow);
+  background: linear-gradient(to right, var(--scarlet) 0 50%, var(--violet) 50% 100%);
+  opacity: 0;
+  transform: translateY(-100%);
+  visibility: hidden;
+  transition:
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.3s ease,
+    visibility 0s linear 0.5s;
+}
+
+/* Chapter bands share the bar's colours: the cover's yellow seam and a
+   shadow keep the bar reading as a layer above them as one scrolls under. */
+.thesis-bar.is-visible {
+  box-shadow: 0 0.35rem 1rem rgb(30 26 34 / 0.45);
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+  transition:
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.3s ease;
+}
+
+.thesis-bar p {
   margin: 0;
+  white-space: nowrap;
+}
+
+.thesis-bar-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 900;
+  font-size: 1rem;
+}
+
+.thesis-bar-chapter {
   font-family: 'Rubik', sans-serif;
-  font-size: clamp(1rem, 0.5vw + 0.9rem, 1.25rem);
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  opacity: 0.85;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.thesis-bar-chapter span {
+  margin-right: 0.4rem;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 900;
+  font-size: 1rem;
+  font-variant-numeric: lining-nums;
+}
+
+/* Hero */
+
+.hero {
+  position: relative;
+  min-height: calc(100vh - var(--bar-height));
+  min-height: calc(100dvh - var(--bar-height));
+  display: grid;
+  place-items: center;
+  padding: 2rem clamp(1.25rem, 5vw, 3rem);
+  color: var(--yellow);
+  background: var(--paper);
+  isolation: isolate;
+  overflow: hidden;
+  overflow: clip;
+}
+
+/* Cover opening: each game's half slides in from its own side and they
+   meet at the seam, then the title and byline set on top. The halves live
+   on pseudo-elements so the cover can start empty; clipping keeps the
+   off-screen halves from widening the page. */
+.hero::before,
+.hero::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: -1;
+  width: 50%;
+  animation: hero-half 0.6s cubic-bezier(0.77, 0, 0.18, 1) both;
+}
+
+.hero::before {
+  left: 0;
+  background: var(--scarlet);
+  --hero-from: -100%;
+}
+
+.hero::after {
+  right: 0;
+  background: var(--violet);
+  --hero-from: 100%;
+}
+
+@keyframes hero-half {
+  from { transform: translateX(var(--hero-from)); }
+  to { transform: none; }
+}
+
+@keyframes hero-fade {
+  from { opacity: 0; }
+}
+
+@keyframes hero-set {
+  from { opacity: 0; transform: translateY(0.5rem); }
+  to { opacity: 1; transform: none; }
+}
+
+.hero-content {
+  text-align: center;
+  animation: hero-set 0.35s cubic-bezier(0.2, 0, 0, 1) 0.5s both;
+}
+
+.hero-byline {
+  animation: hero-set 0.3s cubic-bezier(0.2, 0, 0, 1) 0.7s both;
+}
+
+/* A yellow seam closes the cover so its Scarlet half doesn't run straight
+   into chapter 1's Scarlet band. */
+.hero {
+  border-bottom: 0.5rem solid var(--yellow);
 }
 
 .page-title {
-  margin: 0;
+  margin: 0 auto;
   max-width: 20ch;
   font-family: 'Playfair Display', Georgia, serif;
   font-weight: 900;
   font-size: clamp(2.25rem, 6vw + 1rem, 6rem);
   line-height: 1.05;
+}
+
+/* Cover byline, set bottom-left like a printed title page. */
+.hero-byline {
+  position: absolute;
+  left: clamp(1.25rem, 5vw, 3rem);
+  bottom: clamp(1.5rem, 6vh, 3rem);
+  right: clamp(1.25rem, 5vw, 3rem);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.hero-byline-role {
+  font-family: 'Rubik', sans-serif;
+  font-weight: 600;
+  font-size: clamp(0.8rem, 0.3vw + 0.75rem, 0.95rem);
+  opacity: 0.85;
+}
+
+/* Thesis body: each chapter opens on a full-bleed band in its game's
+   colour, the chapter number set big enough to be cut by the band's edge. */
+
+.thesis {
+  padding-bottom: clamp(4rem, 10vw, 8rem);
+}
+
+.chapter {
+  scroll-margin-top: calc(var(--bar-height) + var(--thesis-bar-height));
+}
+
+/* Fixed band height: a title that wraps grows up into the band instead of
+   making that one chapter's band taller than the rest. */
+.chapter-bar {
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(1rem, 3vw, 2rem);
+  overflow: hidden;
+  min-height: clamp(9.5rem, 10vw + 5.5rem, 12.5rem);
+  padding: 1.25rem max(var(--gutter), (100% - var(--measure)) / 2) 0;
+  color: var(--yellow);
+  background: var(--scarlet);
+}
+
+.chapter:nth-child(even) .chapter-bar {
+  background: var(--violet);
+}
+
+.chapter-number {
+  flex-shrink: 0;
+  margin: 0 0 -0.12em;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 900;
+  font-size: clamp(5.5rem, 9vw + 2rem, 10rem);
+  font-variant-numeric: lining-nums;
+  line-height: 0.8;
+}
+
+.chapter-bar h2 {
+  margin: 0;
+  padding-bottom: clamp(1rem, 2.5vw, 1.75rem);
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 900;
+  font-size: clamp(1.6rem, 2.5vw + 1rem, 2.75rem);
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+.chapter-body {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: clamp(2.5rem, 6vw, 4rem) var(--gutter) clamp(3rem, 7vw, 5rem);
+  box-sizing: content-box;
+}
+
+.chapter-body code {
+  font-family: 'Rubik', sans-serif;
+  font-weight: 500;
+}
+
+.chapter-body p {
+  margin: 0 0 1rem;
+}
+
+.lead {
+  font-size: 1.2rem;
+  line-height: 1.55;
+}
+
+.chapter-body a {
+  color: var(--green);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.chapter-body a:hover {
+  text-decoration-color: var(--yellow);
+}
+
+/* Inline keyword emphasis: the presentation's own device for calling out a
+   term mid-sentence in bold display serif instead of a plain highlight. */
+.hl {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 900;
+  font-style: normal;
+}
+
+.hl--scarlet { color: var(--scarlet); }
+.hl--violet { color: var(--violet); }
+.hl--green { color: var(--green); }
+
+/* Objetivos: colored display-serif keyword over a plain caption, laid out
+   side by side the way the source deck sets its three-up slides. */
+.goals {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2rem clamp(1.5rem, 4vw, 2.5rem);
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.goals li {
+  margin: 0;
+}
+
+.goal-kw {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 900;
+  font-size: 1.3rem;
+  line-height: 1.15;
+}
+
+.goal-kw--scarlet { color: var(--scarlet); }
+.goal-kw--green { color: var(--green); }
+.goal-kw--violet { color: var(--violet); }
+
+/* El problema: same keyword+caption device as .goals, but two-up — four
+   symptoms read better as a pair of rows than a lone leftover on a 3-grid. */
+.problems {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.75rem clamp(1.5rem, 4vw, 2.5rem);
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.problems li {
+  margin: 0;
+}
+
+/* Metodología: the deck's own triangle diagram — one axis on top, two
+   flanking the base — now with the thesis's real three axes. */
+.method-triangle {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  margin: 2.5rem 0;
+  text-align: center;
+}
+
+.method-axis {
+  margin: 0;
+  max-width: 20ch;
+}
+
+.method-axis strong {
+  display: block;
+  font-size: 1.3rem;
+}
+
+.method-axis span {
+  font-size: 0.95rem;
+}
+
+/* Each axis links to the chapter where that method is applied: the keyword
+   carries the underline in its own colour, the Archivo line says where. */
+.chapter-body .method-link {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.method-link strong {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.method-link .method-where {
+  display: block;
+  margin-top: 0.3rem;
+  font-family: 'Rubik', sans-serif;
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: color-mix(in srgb, var(--ink) 70%, var(--paper));
+  white-space: nowrap;
+}
+
+.method-link:hover strong,
+.method-link:focus-visible strong {
+  text-decoration-thickness: 4px;
+}
+
+.method-link:hover .method-where,
+.method-link:focus-visible .method-where {
+  color: var(--ink);
+}
+
+.method-link:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.method-shape {
+  width: clamp(140px, 22vw, 220px);
+  height: auto;
+}
+
+/* Draw-in, armed by script.js once the diagram is on screen: the outline
+   runs top, left, right in reading order, each axis appears as the line
+   reaches its vertex, then the shape fills. Without JS it's just drawn. */
+.method-edge {
+  fill: none;
+  stroke: var(--yellow);
+  stroke-width: 4;
+  stroke-linejoin: round;
+}
+
+.method-triangle.is-armed .method-edge {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.method-triangle.is-armed .method-fill,
+.method-triangle.is-armed .method-axis {
+  opacity: 0;
+}
+
+.method-triangle.is-drawn .method-edge {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 1.1s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.method-triangle.is-drawn .method-fill {
+  opacity: 1;
+  transition: opacity 0.45s ease 1s;
+}
+
+.method-triangle.is-drawn .method-axis {
+  opacity: 1;
+  transition: opacity 0.4s ease;
+}
+
+.method-triangle.is-drawn .method-axis--left {
+  transition-delay: 0.4s;
+}
+
+.method-triangle.is-drawn .method-axis--right {
+  transition-delay: 0.75s;
+}
+
+.method-bottom {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 28rem;
+}
+
+.aside-note {
+  margin: 2rem 0 0;
+  padding-left: 1rem;
+  border-left: 3px solid var(--yellow);
+  font-size: 0.9rem;
+  color: color-mix(in srgb, var(--ink) 75%, var(--paper));
+}
+
+/* Desarrollo: one panel per subsystem, a sprite standing in for the
+   subsystem the way the deck pairs a Pokémon with each topic. */
+.subsystem {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  margin: 2rem 0 0;
+}
+
+.subsystem + .subsystem {
+  margin-top: 2.75rem;
+}
+
+/* front_default sprites are 96x96 pixel art: scale with nearest-neighbor
+   so they stay crisp instead of blurring like a photo would. */
+.subsystem-sprite {
+  flex-shrink: 0;
+  width: clamp(72px, 10vw, 132px);
+  height: auto;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+}
+
+.subsystem-name {
+  margin: 0 0 0.5rem;
+  font-size: 1.4rem;
+}
+
+.subsystem-body p {
+  margin: 0 0 0.75rem;
+}
+
+.subsystem-body .listing {
+  margin: 1.25rem 0 0;
+}
+
+/* Resultados: one sourced figure, set big, instead of an invented table. */
+.stat {
+  margin: 2rem 0 0;
+}
+
+.stat-figure {
+  margin: 0;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 900;
+  font-size: clamp(2rem, 4vw + 1rem, 3rem);
+  line-height: 1.1;
+  color: var(--scarlet);
+}
+
+.stat-sep {
+  color: color-mix(in srgb, var(--ink) 45%, var(--paper));
+}
+
+.stat-unit {
+  font-size: 0.5em;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.stat-caption {
+  margin: 0.75rem 0 0;
+  max-width: 48ch;
+  font-size: 0.9rem;
+  color: color-mix(in srgb, var(--ink) 75%, var(--paper));
+}
+
+/* Frame-time chart: only the sourced FPS ranges, converted to ms. Sized in
+   viewBox units and capped so labels stay near body size at any width. */
+.frame-chart {
+  display: block;
+  width: 100%;
+  max-width: 30rem;
+  height: auto;
+  margin: 1.5rem 0 0;
+  overflow: visible;
+  font-family: 'Rubik', sans-serif;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.frame-chart text {
+  fill: var(--ink);
+}
+
+.frame-chart-grid line {
+  stroke: color-mix(in srgb, var(--ink) 10%, var(--paper));
+  stroke-width: 1;
+}
+
+.frame-chart-axis {
+  stroke: color-mix(in srgb, var(--ink) 45%, var(--paper));
+  stroke-width: 1;
+}
+
+.frame-chart-ticks text,
+.frame-chart-axis-title {
+  font-size: 13px;
+  text-anchor: middle;
+}
+
+.frame-chart .frame-chart-ticks text,
+.frame-chart .frame-chart-axis-title,
+.frame-chart .frame-chart-hint {
+  fill: color-mix(in srgb, var(--ink) 70%, var(--paper));
+}
+
+.frame-chart-hint {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.frame-chart-hint--end,
+.frame-chart-label--end {
+  text-anchor: end;
+}
+
+.frame-chart-target {
+  stroke: var(--green);
+  stroke-width: 2;
+  stroke-dasharray: 4 3;
+}
+
+.frame-chart-target-label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.frame-chart-label {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.frame-chart-value {
+  font-size: 13px;
+}
+
+.frame-chart-bar--before { fill: var(--scarlet); }
+.frame-chart-bar--after { fill: var(--violet); }
+
+.listing {
+  margin: 2rem 0;
+}
+
+.listing pre {
+  margin: 0;
+  padding: 1.25rem;
+  overflow-x: auto;
+  font-family: 'Rubik', sans-serif;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  tab-size: 3em;
+  line-height: 1.7;
+  color: var(--paper);
+  background: var(--ink);
+  border-radius: 4px;
+}
+
+.listing code {
+  display: block;
+  font: inherit;
+  min-width: max-content;
+}
+
+.listing .ln {
+  color: color-mix(in srgb, var(--paper) 45%, var(--ink));
+}
+
+.listing mark {
+  display: block;
+  margin-inline: -1.25rem;
+  padding-inline: 1.25rem;
+  color: var(--ink);
+  background: var(--yellow);
+}
+
+.listing mark .ln {
+  color: color-mix(in srgb, var(--ink) 70%, var(--yellow));
+}
+
+.listing figcaption {
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  color: color-mix(in srgb, var(--ink) 70%, var(--paper));
+}
+
+blockquote {
+  margin: 0 0 1.5rem;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-size: 1.4rem;
+  line-height: 1.45;
+  color: var(--scarlet);
+}
+
+/* Conclusiones: the closing answers the cover. Same hard split, the thesis
+   answer set big in the middle, the chapter label straddling the seam. */
+.thesis:has(> .chapter--closing:last-child) {
+  padding-bottom: 0;
+}
+
+.chapter--closing {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - var(--bar-height));
+  min-height: calc(100dvh - var(--bar-height));
+  padding-top: var(--thesis-bar-height);
+  color: var(--yellow);
+  background: linear-gradient(to right, var(--scarlet) 0 50%, var(--violet) 50% 100%);
+}
+
+.chapter.chapter--closing .chapter-bar {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: baseline;
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+  overflow: visible;
+  padding: clamp(2rem, 6vh, 3.5rem) var(--gutter) 0;
+  background: none;
+}
+
+.chapter--closing .chapter-number {
+  justify-self: end;
+  margin: 0;
+  font-size: clamp(2.75rem, 3vw + 1.75rem, 4.5rem);
+  line-height: 1;
+}
+
+.chapter--closing .chapter-bar h2 {
+  justify-self: start;
+  padding: 0;
+  font-size: clamp(1.25rem, 1vw + 1rem, 1.75rem);
+}
+
+.chapter--closing .chapter-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 62rem;
+  padding-block: clamp(2.5rem, 8vh, 5rem);
+  text-align: center;
+}
+
+.chapter--closing blockquote {
+  margin: 0 auto;
+  font-weight: 400;
+  font-size: clamp(1.9rem, 3vw + 1rem, 3.75rem);
+  line-height: 1.15;
+  color: var(--yellow);
+  text-wrap: balance;
+}
+
+.chapter--closing .chapter-body p {
+  max-width: 36rem;
+  margin: clamp(2.5rem, 7vh, 4rem) auto 0;
+  font-size: 1.05rem;
+  color: var(--paper);
+  text-wrap: pretty;
+}
+
+.chapter--closing .hl {
+  color: var(--yellow);
+}
+
+/* Centred flags would overlap the full name on narrow screens: use the monogram. */
+@media (max-width: 768px) {
+  .site-name {
+    font-size: 1.25rem;
+  }
+
+  .site-name-full {
+    display: none;
+  }
+
+  .site-name-short {
+    display: inline;
+  }
+}
+
+@media (max-width: 640px) {
+  .thesis-bar-chapter {
+    display: none;
+  }
+
+  .goals,
+  .problems {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+  }
+
+  .subsystem {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .subsystem-sprite {
+    width: 72px;
+  }
+
+  /* The chart scales down with the column: enlarge its text to compensate. */
+  .frame-chart-label {
+    font-size: 17px;
+  }
+
+  .frame-chart-value,
+  .frame-chart-target-label,
+  .frame-chart-ticks text,
+  .frame-chart-axis-title,
+  .frame-chart-hint {
+    font-size: 14.5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-byline {
+    text-align: center;
+    align-items: center;
+  }
+}
+
+/* Same policy as the portfolio: reduced motion drops the full-width slide
+   of the cover halves but keeps the fades, which aren't the kind of motion
+   the setting exists to avoid. The thesis bar's short slide stays. */
+@media (prefers-reduced-motion: reduce) {
+  .hero::before,
+  .hero::after {
+    animation-name: hero-fade;
+  }
 }
