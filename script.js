@@ -491,7 +491,21 @@
   const style = getComputedStyle(sequencer);
   const start = parseFloat(style.getPropertyValue("--seq-start")) || 2019;
   const span = parseFloat(style.getPropertyValue("--seq-span")) || 8;
-  const MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+  const DATE_FORMATS = {
+    es: {
+      months: ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"],
+      format: (d, m, y) => `${d} ${m} ${y}`,
+    },
+    en: {
+      months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+      format: (d, m, y) => `${d} ${m} ${y}`,
+    },
+    de: {
+      months: ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"],
+      format: (d, m, y) => `${d}. ${m} ${y}`,
+    },
+  };
+  const dateFormat = DATE_FORMATS[document.documentElement.lang.slice(0, 2)] || DATE_FORMATS.es;
 
   const today = new Date();
   const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
@@ -500,7 +514,11 @@
   sequencer.style.setProperty("--seq-now", now.toFixed(4));
   if (clock) {
     clock.dateTime = today.toISOString().slice(0, 10);
-    clock.textContent = `${today.getDate()} ${MONTHS[today.getMonth()]} ${today.getFullYear()}`;
+    clock.textContent = dateFormat.format(
+      today.getDate(),
+      dateFormat.months[today.getMonth()],
+      today.getFullYear()
+    );
   }
 
   bars.forEach((bar) => {
@@ -600,6 +618,34 @@
 
   const AUTOPLAY_MS = 5000;
 
+  const GALLERY_STRINGS = {
+    es: {
+      carousel: "carrusel",
+      group: (p) => `Capturas de ${p}`,
+      slide: (i, n, p) => `Captura ${i} de ${n} de ${p}`,
+      prev: "Imagen anterior",
+      next: "Imagen siguiente",
+      goTo: (i) => `Ir a la imagen ${i}`,
+    },
+    en: {
+      carousel: "carousel",
+      group: (p) => `Screenshots of ${p}`,
+      slide: (i, n, p) => `Screenshot ${i} of ${n} of ${p}`,
+      prev: "Previous image",
+      next: "Next image",
+      goTo: (i) => `Go to image ${i}`,
+    },
+    de: {
+      carousel: "Karussell",
+      group: (p) => `Screenshots von ${p}`,
+      slide: (i, n, p) => `Screenshot ${i} von ${n} von ${p}`,
+      prev: "Vorheriges Bild",
+      next: "Nächstes Bild",
+      goTo: (i) => `Zu Bild ${i}`,
+    },
+  };
+  const strings = GALLERY_STRINGS[document.documentElement.lang.slice(0, 2)] || GALLERY_STRINGS.es;
+
   function shuffle(arr) {
     const a = arr.slice();
     for (let i = a.length - 1; i > 0; i--) {
@@ -617,8 +663,8 @@
     container.classList.add("has-gallery");
     container.removeAttribute("aria-hidden");
     container.setAttribute("role", "group");
-    container.setAttribute("aria-roledescription", "carrusel");
-    container.setAttribute("aria-label", `Capturas de ${project}`);
+    container.setAttribute("aria-roledescription", strings.carousel);
+    container.setAttribute("aria-label", strings.group(project));
     container.querySelector(".project-media-icon")?.remove();
 
     const slidesWrap = document.createElement("div");
@@ -628,7 +674,7 @@
       const img = document.createElement("img");
       img.className = "project-media-slide";
       img.src = new URL(`img/${project}/${encodeURIComponent(file)}`, ASSET_BASE).href;
-      img.alt = `Captura ${i + 1} de ${images.length} de ${project}`;
+      img.alt = strings.slide(i + 1, images.length, project);
       img.loading = "lazy";
       slidesWrap.appendChild(img);
       return img;
@@ -640,14 +686,14 @@
       const prevBtn = document.createElement("button");
       prevBtn.type = "button";
       prevBtn.className = "project-media-nav project-media-nav--prev";
-      prevBtn.setAttribute("aria-label", "Imagen anterior");
+      prevBtn.setAttribute("aria-label", strings.prev);
       prevBtn.innerHTML =
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>';
 
       const nextBtn = document.createElement("button");
       nextBtn.type = "button";
       nextBtn.className = "project-media-nav project-media-nav--next";
-      nextBtn.setAttribute("aria-label", "Imagen siguiente");
+      nextBtn.setAttribute("aria-label", strings.next);
       nextBtn.innerHTML =
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>';
 
@@ -657,7 +703,7 @@
         const dot = document.createElement("button");
         dot.type = "button";
         dot.className = "project-media-dot";
-        dot.setAttribute("aria-label", `Ir a la imagen ${i + 1}`);
+        dot.setAttribute("aria-label", strings.goTo(i + 1));
         dot.addEventListener("click", (e) => {
           e.stopPropagation();
           goTo(i);

@@ -755,6 +755,12 @@ a {
   line-height: 1.35;
 }
 
+/* Sentence closing after the highlight list, for languages where the
+   adjectives sit mid-sentence (e.g. English "to program <list> experiences"). */
+.tech-goal--tail {
+  margin: 2rem 0 0;
+}
+
 .tech-goal-highlight {
   color: var(--accent);
   animation-name: tech-goal-point-in;
