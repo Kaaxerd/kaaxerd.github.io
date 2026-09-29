@@ -54,12 +54,12 @@
         <h2 id="cap-1">El problema</h2>
       </header>
       <div class="chapter-body">
-        <p class="lead">Pokémon Escarlata y Púrpura (Game Freak, 2022) fueron el primer juego de mundo abierto de la saga principal, ejecutado sobre el hardware limitado de Nintendo Switch. La transición expuso fallos de rendimiento documentados desde el lanzamiento por prensa especializada y jugadores.</p>
+        <p class="lead">Pokémon Escarlata y Púrpura (Game Freak, 2022) fueron el primer juego de mundo abierto de la saga principal de Pokémon, ejecutado sobre el hardware limitado de Nintendo Switch. La transición a esta modalidad de juego expuso fallos de rendimiento documentados desde el lanzamiento tanto por prensa especializada como por jugadores.</p>
         <ul class="problems">
-          <li><strong class="goal-kw goal-kw--scarlet">Memory leak</strong> degradación progresiva del rendimiento tras sesiones largas por una gestión deficiente de punteros en el heap.</li>
-          <li><strong class="goal-kw goal-kw--green">Pop-in / draw distance</strong> aparición súbita de modelos y texturas por un algoritmo de culling demasiado agresivo.</li>
-          <li><strong class="goal-kw goal-kw--violet">Frame pacing</strong> caídas de FPS y stuttering en zonas de alta carga por una mala sincronización CPU-GPU.</li>
-          <li><strong class="goal-kw goal-kw--scarlet">Netcode</strong> latencia y errores de conexión en teraincursiones por una arquitectura peer-to-peer sin optimizar.</li>
+          <li><strong class="goal-kw goal-kw--scarlet">Memory leak</strong> Degradación progresiva del rendimiento tras sesiones largas por una gestión deficiente de punteros en el heap.</li>
+          <li><strong class="goal-kw goal-kw--violet">Pop-in / draw distance</strong> Aparición súbita de modelos y texturas por un algoritmo de culling demasiado agresivo.</li>
+          <li><strong class="goal-kw goal-kw--scarlet">Frame pacing</strong> Caídas de FPS y stuttering en zonas de alta carga por una mala sincronización CPU-GPU.</li>
+          <li><strong class="goal-kw goal-kw--violet">Netcode</strong> Latencia y errores de conexión, especialmente en teraincursiones, por una arquitectura peer-to-peer sin optimizar.</li>
         </ul>
       </div>
     </section>
@@ -70,14 +70,17 @@
         <h2 id="cap-2">Pregunta y objetivos</h2>
       </header>
       <div class="chapter-body">
-        <blockquote>¿Cuáles son las causas arquitectónicas de los problemas de rendimiento de Pokémon Escarlata y Púrpura, y qué alternativas de optimización se pueden proponer desde la ingeniería de software?</blockquote>
+        <blockquote class="question">
+          <p>¿Cuáles son las <strong class="hl hl--scarlet">causas</strong> que generan el <strong class="hl-medium hl--scarlet">bajo rendimiento</strong> de Pokémon Escarlata y Púrpura?</p>
+          <p>¿Qué <strong class="hl hl--violet">soluciones</strong> se pueden proponer a partir de la <strong class="hl-medium hl--violet">ingeniería de software</strong>?</p>
+        </blockquote>
         <p>De esta pregunta se derivan cinco objetivos específicos:</p>
         <ul class="goals">
           <li><strong class="goal-kw goal-kw--scarlet">Extraer y descompilar</strong> el ejecutable del juego de forma legal, con herramientas de ingeniería inversa como Ghidra.</li>
-          <li><strong class="goal-kw goal-kw--green">Clasificar por subsistema</strong> las funciones del módulo principal e identificar las de mayor impacto.</li>
-          <li><strong class="goal-kw goal-kw--violet">Analizar en profundidad</strong> los subsistemas críticos para detectar patrones arquitectónicos problemáticos.</li>
-          <li><strong class="goal-kw goal-kw--scarlet">Medir empíricamente</strong> el rendimiento mediante frame timing y detección de pop-in.</li>
-          <li><strong class="goal-kw goal-kw--green">Proponer alternativas</strong> de optimización viables, fundamentadas en buenas prácticas de la industria.</li>
+          <li><strong class="goal-kw goal-kw--violet">Clasificar por subsistema</strong> las funciones del módulo principal e identificar las de mayor impacto.</li>
+          <li><strong class="goal-kw goal-kw--scarlet">Analizar en profundidad</strong> los subsistemas críticos para detectar patrones arquitectónicos problemáticos.</li>
+          <li><strong class="goal-kw goal-kw--violet">Medir empíricamente</strong> el rendimiento mediante frame timing y detección de pop-in.</li>
+          <li><strong class="goal-kw goal-kw--scarlet">Proponer alternativas</strong> de optimización viables, fundamentadas en buenas prácticas de la industria.</li>
         </ul>
       </div>
     </section>
@@ -105,8 +108,8 @@
           <div class="method-bottom">
             <p class="method-axis method-axis--left">
               <a class="method-link" href="#cap-5">
-                <strong class="hl hl--green">Profiling</strong>
-                <span>empírico</span>
+                <strong class="hl hl--green">Profiling empírico</strong>
+                <span>del rendimiento</span>
                 <span class="method-where">Medido en el capítulo&nbsp;5</span>
               </a>
             </p>
@@ -139,11 +142,49 @@
             <p><strong>Problema:</strong> asignaciones dinámicas de tamaño variable sin segregación por tipo ni reutilización estructurada, con rutas de liberación incompletas que fragmentan el heap.</p>
             <p><strong>Propuesta:</strong> sustituir el esquema por <em>pool allocators</em> segregados por tipo de recurso, con tiempos de asignación y liberación constantes.</p>
             <figure class="listing">
-              <pre><code><span class="ln">0x7100a4c2d0</span>	ldr	x8, [x0, #0x48]
-<span class="ln">0x7100a4c2d4</span>	cbz	x8, loc_7100a4c310
-<mark><span class="ln">0x7100a4c2d8</span>	ldrh	w9, [x8, #0x12]</mark><span class="ln">0x7100a4c2dc</span>	cmp	w9, #0x3f
-<span class="ln">0x7100a4c2e0</span>	b.hi	loc_7100a4c310</code></pre>
-              <figcaption>Figura ilustrativa (pseudocódigo genérico, no reproduce el binario original): patrón de asignación sin segregación por tipo.</figcaption>
+              <pre><code><span class="ln">1</span>	<span class="tok-pre">#include &lt;stddef.h&gt;</span>
+<span class="ln">2</span>
+<span class="ln">3</span>	<span class="tok-kw">typedef</span> <span class="tok-kw">struct</span> {
+<span class="ln">4</span>	    <span class="tok-type">Block</span>* next;
+<span class="ln">5</span>	} <span class="tok-type">Block</span>;
+<span class="ln">6</span>
+<span class="ln">7</span>	<span class="tok-kw">typedef</span> <span class="tok-kw">struct</span> {
+<span class="ln">8</span>	    <span class="tok-type">Block</span>* freeList;
+<span class="ln">9</span>	    <span class="tok-type">size_t</span> blockSize;
+<span class="ln">10</span>	} <span class="tok-type">Pool</span>;
+<span class="ln">11</span>
+<span class="ln">12</span>	<span class="tok-comment">// Recorre el buffer y construye la lista enlazada</span>
+<span class="ln">13</span>	<span class="tok-kw">void</span> <span class="tok-fn">poolInitialization</span>(<span class="tok-type">Pool</span>* pool, <span class="tok-kw">void</span>* buffer,
+<span class="ln">14</span>	                        <span class="tok-type">size_t</span> bufferSize, <span class="tok-type">size_t</span> blockSize,
+<span class="ln">15</span>	                        <span class="tok-type">size_t</span> capacity) {
+<span class="ln">16</span>	    pool-&gt;blockSize = blockSize;
+<span class="ln">17</span>	    pool-&gt;freeList = <span class="tok-kw">NULL</span>;
+<span class="ln">18</span>
+<span class="ln">19</span>	    <span class="tok-kw">for</span>(<span class="tok-type">size_t</span> i = 0; i &lt; capacity; i++) {
+<span class="ln">20</span>	        <span class="tok-type">Block</span>* b = (<span class="tok-type">Block</span>*)((<span class="tok-type">char</span>*)buffer + i * blockSize);
+<span class="ln">21</span>	        b-&gt;next = pool-&gt;freeList;
+<span class="ln">22</span>	        pool-&gt;freeList = b;
+<span class="ln">23</span>	    }
+<span class="ln">24</span>	}
+<span class="ln">25</span>
+<span class="ln">26</span>	<span class="tok-comment">// Reserva bloque: pop del frente de la lista</span>
+<span class="ln">27</span>	<span class="tok-kw">void</span>* <span class="tok-fn">poolAllocation</span>(<span class="tok-type">Pool</span>* pool) {
+<span class="ln">28</span>	    <span class="tok-kw">if</span>(!pool-&gt;freeList) {
+<span class="ln">29</span>	        <span class="tok-kw">return</span> <span class="tok-kw">NULL</span>;
+<span class="ln">30</span>	    }
+<span class="ln">31</span>
+<span class="ln">32</span>	    <span class="tok-type">Block</span>* b = pool-&gt;freeList;
+<span class="ln">33</span>	    pool-&gt;freeList = b-&gt;next;
+<span class="ln">34</span>	    <span class="tok-kw">return</span> (<span class="tok-kw">void</span>*)b;
+<span class="ln">35</span>	}
+<span class="ln">36</span>
+<span class="ln">37</span>	<span class="tok-comment">// Liberar bloque: push al frente de la lista</span>
+<span class="ln">38</span>	<span class="tok-kw">void</span> <span class="tok-fn">poolFree</span>(<span class="tok-type">Pool</span>* pool, <span class="tok-kw">void</span>* ptr) {
+<span class="ln">39</span>	    <span class="tok-type">Block</span>* b = (<span class="tok-type">Block</span>*)ptr;
+<span class="ln">40</span>	    b-&gt;next = pool-&gt;freeList;
+<span class="ln">41</span>	    pool-&gt;freeList = b;
+<span class="ln">42</span>	}</code></pre>
+              <figcaption>Implementación en C++ del pool allocator.</figcaption>
             </figure>
           </div>
         </div>
@@ -154,6 +195,59 @@
             <h3 class="subsystem-name hl hl--green">Streaming, culling y LOD</h3>
             <p><strong>Problema:</strong> la visibilidad de entidades se decide con umbrales de distancia rígidos, acoplados a la destrucción inmediata del asset al salir de rango, sin histéresis espacial.</p>
             <p><strong>Propuesta:</strong> cola FIFO de peticiones de streaming con presupuesto de carga por frame y bandas de histéresis entre estados de visibilidad.</p>
+            <figure class="listing">
+              <pre><code><span class="ln">1</span>	<span class="tok-pre">#include &lt;stddef.h&gt;</span>
+<span class="ln">2</span>
+<span class="ln">3</span>	<span class="tok-kw">typedef</span> <span class="tok-kw">struct</span> {
+<span class="ln">4</span>	    <span class="tok-kw">const</span> <span class="tok-type">char</span>* path;
+<span class="ln">5</span>	    <span class="tok-type">size_t</span> sizeBytes;
+<span class="ln">6</span>	    <span class="tok-type">AssetRequest</span>* next;
+<span class="ln">7</span>	} <span class="tok-type">AssetRequest</span>;
+<span class="ln">8</span>
+<span class="ln">9</span>	<span class="tok-kw">typedef</span> <span class="tok-kw">struct</span> {
+<span class="ln">10</span>	    <span class="tok-type">AssetRequest</span>* head;
+<span class="ln">11</span>	    <span class="tok-type">AssetRequest</span>* tail;
+<span class="ln">12</span>	} <span class="tok-type">StreamQueue</span>;
+<span class="ln">13</span>
+<span class="ln">14</span>	<span class="tok-comment">// Encolar petición al final</span>
+<span class="ln">15</span>	<span class="tok-kw">void</span> <span class="tok-fn">queuePush</span>(<span class="tok-type">StreamQueue</span>* q, <span class="tok-type">AssetRequest</span>* req) {
+<span class="ln">16</span>	    req-&gt;next = <span class="tok-kw">NULL</span>;
+<span class="ln">17</span>
+<span class="ln">18</span>	    <span class="tok-kw">if</span>(!q-&gt;tail) {
+<span class="ln">19</span>	        q-&gt;head = q-&gt;tail = req;
+<span class="ln">20</span>	    } <span class="tok-kw">else</span> {
+<span class="ln">21</span>	        q-&gt;tail-&gt;next = req;
+<span class="ln">22</span>	        q-&gt;tail = req;
+<span class="ln">23</span>	    }
+<span class="ln">24</span>	}
+<span class="ln">25</span>
+<span class="ln">26</span>	<span class="tok-comment">// Desencolar petición del frente</span>
+<span class="ln">27</span>	<span class="tok-type">AssetRequest</span>* <span class="tok-fn">queuePop</span>(<span class="tok-type">StreamQueue</span>* q) {
+<span class="ln">28</span>	    <span class="tok-kw">if</span>(!q-&gt;head) {
+<span class="ln">29</span>	        <span class="tok-kw">return</span> <span class="tok-kw">NULL</span>;
+<span class="ln">30</span>	    }
+<span class="ln">31</span>	    <span class="tok-type">AssetRequest</span>* req = q-&gt;head;
+<span class="ln">32</span>	    q-&gt;head = req-&gt;next;
+<span class="ln">33</span>
+<span class="ln">34</span>	    <span class="tok-kw">if</span>(!q-&gt;head) {
+<span class="ln">35</span>	        q-&gt;tail = <span class="tok-kw">NULL</span>;
+<span class="ln">36</span>	    }
+<span class="ln">37</span>
+<span class="ln">38</span>	    <span class="tok-kw">return</span> req;
+<span class="ln">39</span>	}
+<span class="ln">40</span>
+<span class="ln">41</span>	<span class="tok-comment">// Procesar el stream con un presupuesto de bytes por frame</span>
+<span class="ln">42</span>	<span class="tok-kw">void</span> <span class="tok-fn">streamProcessFrame</span>(<span class="tok-type">StreamQueue</span>* q, <span class="tok-type">size_t</span> budgetBytes) {
+<span class="ln">43</span>	    <span class="tok-type">size_t</span> processed = 0;
+<span class="ln">44</span>
+<span class="ln">45</span>	    <span class="tok-kw">while</span>(q-&gt;head &amp;&amp; processed &lt; budgetBytes) {
+<span class="ln">46</span>	        <span class="tok-type">AssetRequest</span>* req = queue_pop(q);
+<span class="ln">47</span>	        loadAsset(req-&gt;path);
+<span class="ln">48</span>	        processed += req-&gt;sizeBytes;
+<span class="ln">49</span>	    }
+<span class="ln">50</span>	}</code></pre>
+              <figcaption>Implementación en C++ de la cola FIFO de streaming.</figcaption>
+            </figure>
           </div>
         </div>
 
@@ -163,6 +257,38 @@
             <h3 class="subsystem-name hl hl--violet">Rendimiento y concurrencia</h3>
             <p><strong>Problema:</strong> bucle de juego en configuración <em>lockstep</em>, con lógica y render acoplados y sincronización rígida entre CPU y GPU.</p>
             <p><strong>Propuesta:</strong> timestep fijo con acumulador que desacopla la simulación del framerate efectivo.</p>
+            <figure class="listing">
+              <pre><code><span class="ln">1</span>	<span class="tok-kw">const</span> <span class="tok-type">float</span> FIXED_DELTA_TIME = 1.0f / 30.0f; <span class="tok-comment">// 30 FPS</span>
+<span class="ln">2</span>	<span class="tok-kw">const</span> <span class="tok-type">int</span> MAX_STEPS = 3;
+<span class="ln">3</span>
+<span class="ln">4</span>	<span class="tok-type">float</span> accumulator = 0.0f;
+<span class="ln">5</span>	<span class="tok-type">float</span> prevTime = get_time();
+<span class="ln">6</span>
+<span class="ln">7</span>	<span class="tok-kw">while</span>(running) {
+<span class="ln">8</span>	    <span class="tok-type">float</span> curTime = get_time();
+<span class="ln">9</span>	    <span class="tok-type">float</span> frameTime = curTime - prevTime;
+<span class="ln">10</span>	    prevTime = curTime;
+<span class="ln">11</span>
+<span class="ln">12</span>	    <span class="tok-kw">if</span>(frameTime &gt; 0.1f) {
+<span class="ln">13</span>	        frameTime = 0.1f; <span class="tok-comment">// Evitar acumulación excesiva</span>
+<span class="ln">14</span>	    }
+<span class="ln">15</span>
+<span class="ln">16</span>	    accumulator += frameTime;
+<span class="ln">17</span>
+<span class="ln">18</span>	    <span class="tok-comment">// Avanzar la lógica en pasos fijos, limitando el número de pasos por frame</span>
+<span class="ln">19</span>	    <span class="tok-type">int</span> steps = 0;
+<span class="ln">20</span>	    <span class="tok-kw">while</span>(accumulator &gt;= FIXED_DELTA_TIME &amp;&amp; steps &lt; MAX_STEPS) {
+<span class="ln">21</span>	        update(FIXED_DELTA_TIME);
+<span class="ln">22</span>	        accumulator -= FIXED_DELTA_TIME;
+<span class="ln">23</span>	        steps++;
+<span class="ln">24</span>	    }
+<span class="ln">25</span>
+<span class="ln">26</span>	    <span class="tok-comment">// Calcular alpha para interpolación entre estados</span>
+<span class="ln">27</span>	    <span class="tok-type">float</span> alpha = accumulator / FIXED_DELTA_TIME;
+<span class="ln">28</span>	    render(alpha);
+<span class="ln">29</span>	}</code></pre>
+              <figcaption>Implementación en C++ del timestep fijo con acumulador.</figcaption>
+            </figure>
           </div>
         </div>
       </div>

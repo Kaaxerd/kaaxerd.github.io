@@ -395,11 +395,51 @@ a.lang-flag-link:focus-visible {
 .hl--violet { color: var(--violet); }
 .hl--green { color: var(--green); }
 
+/* Same device in bold Rubik: a coloured keyword sized a notch above body
+   text, one step down from the display-serif keyword. */
+.hl-medium {
+  font-family: 'Rubik', sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Pregunta (cap. 2): left-aligned like the rest of the chapter, in step with
+   how the closing chapter already mixes plain text with .hl accents — just
+   two restrained tiers of emphasis instead of a slide-style size jump. */
+.question {
+  margin: 0 0 1.5rem;
+  font-family: 'Rubik', sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: clamp(1.2rem, 0.6vw + 1.05rem, 1.4rem);
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.question p {
+  margin: 0 0 1rem;
+}
+
+.question p:last-child {
+  margin-bottom: 0;
+}
+
+.question .hl {
+  font-size: 1.6em;
+}
+
+.question .hl-medium {
+  font-size: 1.15em;
+}
+
 /* Objetivos: colored display-serif keyword over a plain caption, laid out
    side by side the way the source deck sets its three-up slides. */
+/* Flex, not grid: with 5 items over 3 columns, a flex row lets the trailing
+   pair centre itself instead of hugging the grid's left edge. */
 .goals {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 2rem clamp(1.5rem, 4vw, 2.5rem);
   margin: 2rem 0 0;
   padding: 0;
@@ -407,6 +447,7 @@ a.lang-flag-link:focus-visible {
 }
 
 .goals li {
+  flex: 0 1 calc((100% - 2 * clamp(1.5rem, 4vw, 2.5rem)) / 3);
   margin: 0;
 }
 
@@ -462,20 +503,13 @@ a.lang-flag-link:focus-visible {
   font-size: 0.95rem;
 }
 
-/* Each axis links to the chapter where that method is applied: the keyword
-   carries the underline in its own colour, the Archivo line says where. */
+/* Each axis links to the chapter where that method is applied. */
 .chapter-body .method-link {
   display: inline-block;
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
   color: inherit;
   text-decoration: none;
-}
-
-.method-link strong {
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 4px;
 }
 
 .method-link .method-where {
@@ -486,11 +520,6 @@ a.lang-flag-link:focus-visible {
   font-size: 0.8rem;
   color: color-mix(in srgb, var(--ink) 70%, var(--paper));
   white-space: nowrap;
-}
-
-.method-link:hover strong,
-.method-link:focus-visible strong {
-  text-decoration-thickness: 4px;
 }
 
 .method-link:hover .method-where,
@@ -747,6 +776,36 @@ a.lang-flag-link:focus-visible {
   color: color-mix(in srgb, var(--ink) 70%, var(--yellow));
 }
 
+/* Manual syntax highlighting: accents lightened toward paper so they stay
+   legible on the dark listing background, unlike their normal on-paper use. */
+.listing {
+  --syntax-scarlet: color-mix(in srgb, var(--scarlet) 55%, var(--paper));
+  --syntax-violet: color-mix(in srgb, var(--violet) 55%, var(--paper));
+  --syntax-green: color-mix(in srgb, var(--green) 55%, var(--paper));
+}
+
+.listing .tok-kw {
+  color: var(--yellow);
+}
+
+.listing .tok-type {
+  color: var(--syntax-green);
+}
+
+.listing .tok-fn {
+  color: var(--syntax-violet);
+  font-weight: 600;
+}
+
+.listing .tok-pre {
+  color: var(--syntax-scarlet);
+}
+
+.listing .tok-comment {
+  color: color-mix(in srgb, var(--paper) 50%, var(--ink));
+  font-style: italic;
+}
+
 .listing figcaption {
   margin-top: 0.75rem;
   font-size: 0.875rem;
@@ -853,10 +912,18 @@ blockquote {
     display: none;
   }
 
-  .goals,
   .problems {
     grid-template-columns: minmax(0, 1fr);
     gap: 1.5rem;
+  }
+
+  .goals {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .goals li {
+    flex-basis: auto;
   }
 
   .subsystem {
