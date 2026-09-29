@@ -111,7 +111,7 @@
 
   growChart('.zone-chart', '.zone-chart-bar--pueblo, .zone-chart-bar--lago, .zone-chart-bar--ciudad', {
     axis: 'y',
-    origin: '0px 154px',
+    origin: '0px 168px',
     groupSize: 3,
   });
 

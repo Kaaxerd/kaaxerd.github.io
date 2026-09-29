@@ -755,7 +755,7 @@ a.lang-flag-link:focus-visible {
   width: 100%;
   max-width: var(--measure);
   height: auto;
-  margin: 2rem auto 0;
+  margin: 2.5rem auto 0;
   overflow: visible;
   font-family: 'Rubik', sans-serif;
   font-weight: 500;
