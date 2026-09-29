@@ -265,10 +265,6 @@ a.lang-flag-link:focus-visible {
   animation: hero-set 0.35s cubic-bezier(0.2, 0, 0, 1) 0.5s both;
 }
 
-.hero-byline {
-  animation: hero-set 0.3s cubic-bezier(0.2, 0, 0, 1) 0.7s both;
-}
-
 /* A yellow seam closes the cover so its Scarlet half doesn't run straight
    into chapter 1's Scarlet band. */
 .hero {
@@ -284,19 +280,9 @@ a.lang-flag-link:focus-visible {
   line-height: 1.05;
 }
 
-/* Cover byline, set bottom-left like a printed title page. */
-.hero-byline {
-  position: absolute;
-  left: clamp(1.25rem, 5vw, 3rem);
-  bottom: clamp(1.5rem, 6vh, 3rem);
-  right: clamp(1.25rem, 5vw, 3rem);
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-
-.hero-byline-role {
+/* Kicker set above the title, like a printed title page's running head. */
+.hero-kicker {
+  margin: 0 0 0.75rem;
   font-family: 'Rubik', sans-serif;
   font-weight: 600;
   font-size: clamp(0.8rem, 0.3vw + 0.75rem, 0.95rem);
@@ -634,7 +620,8 @@ a.lang-flag-link:focus-visible {
 
 /* Resultados: one sourced figure, set big, instead of an invented table. */
 .stat {
-  margin: 2rem 0 0;
+  margin: 2rem 0 2.5rem;
+  text-align: center;
 }
 
 .stat-figure {
@@ -657,20 +644,59 @@ a.lang-flag-link:focus-visible {
 }
 
 .stat-caption {
-  margin: 0.75rem 0 0;
+  margin: 0.75rem auto 0;
   max-width: 48ch;
+  font-size: 0.9rem;
+  text-align: left;
+  color: color-mix(in srgb, var(--ink) 75%, var(--paper));
+}
+
+/* Zonas de captura: same three-up rhythm as the cap. 4 subsystem cards, but
+   each headlines the one real number that matters instead of a body/sprite
+   pair — the chart above stays the chapter's one big moment. */
+.zones {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2rem clamp(1.5rem, 4vw, 2.5rem);
+  margin: 2.5rem 0 0;
+}
+
+.zone-name {
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+}
+
+.zone .stat-figure {
+  font-size: clamp(1.4rem, 1.5vw + 1rem, 1.75rem);
+  color: inherit;
+}
+
+.zone--scarlet .stat-figure { color: var(--scarlet); }
+.zone--green .stat-figure { color: var(--green); }
+.zone--violet .stat-figure { color: var(--violet); }
+
+.zone-caption {
+  margin: 0.5rem 0 0;
   font-size: 0.9rem;
   color: color-mix(in srgb, var(--ink) 75%, var(--paper));
 }
 
-/* Frame-time chart: only the sourced FPS ranges, converted to ms. Sized in
-   viewBox units and capped so labels stay near body size at any width. */
+@media (max-width: 640px) {
+  .zones {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+/* Frame-time chart: no ruled axis or gridlines — every bar carries its own
+   exact value, so the chart reads as a labelled figure, not a spreadsheet
+   export. Sized in viewBox units and given real room now the column is 54rem. */
 .frame-chart {
   display: block;
   width: 100%;
-  max-width: 30rem;
+  max-width: 42rem;
   height: auto;
-  margin: 1.5rem 0 0;
+  margin: 1.75rem auto 0;
   overflow: visible;
   font-family: 'Rubik', sans-serif;
   font-weight: 500;
@@ -681,30 +707,14 @@ a.lang-flag-link:focus-visible {
   fill: var(--ink);
 }
 
-.frame-chart-grid line {
-  stroke: color-mix(in srgb, var(--ink) 10%, var(--paper));
-  stroke-width: 1;
-}
-
-.frame-chart-axis {
-  stroke: color-mix(in srgb, var(--ink) 45%, var(--paper));
-  stroke-width: 1;
-}
-
-.frame-chart-ticks text,
-.frame-chart-axis-title {
+.frame-chart-axis-title,
+.frame-chart-hint {
   font-size: 13px;
   text-anchor: middle;
-}
-
-.frame-chart .frame-chart-ticks text,
-.frame-chart .frame-chart-axis-title,
-.frame-chart .frame-chart-hint {
   fill: color-mix(in srgb, var(--ink) 70%, var(--paper));
 }
 
 .frame-chart-hint {
-  font-size: 13px;
   font-weight: 600;
 }
 
@@ -725,16 +735,71 @@ a.lang-flag-link:focus-visible {
 }
 
 .frame-chart-label {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
 }
 
 .frame-chart-value {
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .frame-chart-bar--before { fill: var(--scarlet); }
 .frame-chart-bar--after { fill: var(--violet); }
+
+/* Zone chart: grouped bars, one group per metric (medio/mediana/1%/5% low),
+   coloured by zone so each bar reads against the same zone cards above. No
+   ruled scale — each bar carries its own value, so there's nothing left that
+   reads as spreadsheet-default furniture. */
+.zone-chart {
+  display: block;
+  width: 100%;
+  max-width: var(--measure);
+  height: auto;
+  margin: 2rem auto 0;
+  overflow: visible;
+  font-family: 'Rubik', sans-serif;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.zone-chart-legend text {
+  font-size: 11px;
+  fill: color-mix(in srgb, var(--ink) 70%, var(--paper));
+}
+
+.zone-chart-axis {
+  stroke: color-mix(in srgb, var(--ink) 30%, var(--paper));
+  stroke-width: 1;
+}
+
+.zone-chart-value {
+  font-size: 11px;
+  font-weight: 600;
+  text-anchor: middle;
+  fill: var(--ink);
+}
+
+.zone-chart-target {
+  stroke: var(--green);
+  stroke-width: 2;
+  stroke-dasharray: 4 3;
+}
+
+.zone-chart-zone-label {
+  font-size: 13px;
+  font-weight: 600;
+  text-anchor: middle;
+  fill: var(--ink);
+}
+
+.zone-chart-bar--pueblo, .zone-chart-swatch--pueblo { fill: var(--scarlet); }
+.zone-chart-bar--lago, .zone-chart-swatch--lago { fill: var(--green); }
+.zone-chart-bar--ciudad, .zone-chart-swatch--ciudad { fill: var(--violet); }
+
+/* Bar-grow reveal is handled entirely by script.js via the Web Animations
+   API on inline styles — no CSS classes involved, so there's no cascade or
+   specificity to get wrong. Without JS/WAAPI support the bars just render
+   at full size. */
 
 .listing {
   margin: 2rem 0;
@@ -942,17 +1007,9 @@ blockquote {
 
   .frame-chart-value,
   .frame-chart-target-label,
-  .frame-chart-ticks text,
   .frame-chart-axis-title,
   .frame-chart-hint {
     font-size: 14.5px;
-  }
-}
-
-@media (max-width: 480px) {
-  .hero-byline {
-    text-align: center;
-    align-items: center;
   }
 }
 
