@@ -1848,3 +1848,9 @@ a {
   margin-top: 0.75rem;
 }
 
+.cv-note {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+
