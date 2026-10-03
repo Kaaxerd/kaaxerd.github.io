@@ -767,7 +767,16 @@
   const hero = document.querySelector(".hero");
   const grid = document.querySelector(".viewport-grid");
   const gizmo = document.querySelector(".viewport-gizmo");
-  if (!hero || !grid || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if (!hero || !grid) return;
+
+  // Toned down (not skipped) under reduced motion, same treatment as the
+  // project-media tilt below: a few degrees of mouse-follow rotation isn't
+  // the large-scale parallax that preference targets, and disabling it
+  // outright just made the gizmo/grid sit inert instead of easing off.
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const TILT_X_DEG = reduced ? 2 : 6;
+  const TILT_Y_DEG = reduced ? 3 : 10;
+  const GIZMO_DEG = reduced ? 3 : 8;
 
   let targetX = 0;
   let targetY = 0;
@@ -778,9 +787,9 @@
   function tick() {
     curX += (targetX - curX) * 0.08;
     curY += (targetY - curY) * 0.08;
-    grid.style.setProperty("--tilt-x", `${(curY * 6).toFixed(2)}deg`);
-    grid.style.setProperty("--tilt-y", `${(curX * 10).toFixed(2)}deg`);
-    if (gizmo) gizmo.style.transform = `rotate(${(curX * 8).toFixed(2)}deg)`;
+    grid.style.setProperty("--tilt-x", `${(curY * TILT_X_DEG).toFixed(2)}deg`);
+    grid.style.setProperty("--tilt-y", `${(curX * TILT_Y_DEG).toFixed(2)}deg`);
+    if (gizmo) gizmo.style.transform = `rotate(${(curX * GIZMO_DEG).toFixed(2)}deg)`;
 
     if (Math.abs(targetX - curX) > 0.0005 || Math.abs(targetY - curY) > 0.0005) {
       raf = requestAnimationFrame(tick);

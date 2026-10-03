@@ -892,9 +892,8 @@ a {
 
 @media (prefers-reduced-motion: reduce) {
   .has-title-reveal .project-title {
-    opacity: 1;
     transform: none;
-    transition: none;
+    transition: opacity 0.3s ease;
   }
 }
 
