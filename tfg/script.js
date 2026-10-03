@@ -51,72 +51,29 @@
 (() => {
   if (!('IntersectionObserver' in window)) return;
 
-  // Visitors with reduced motion still get a signal that the chart woke up,
-  // just without the scale/transform: bars render at full size from the
-  // start and only the value labels fade in, no movement involved.
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
+  // Bars grow from their baseline on scroll-in, same armed → drawn class
+  // pattern as .method-triangle above. The growth itself is a plain CSS
+  // transition (see style.css), so this is just two classList.add calls —
+  // the browser handles every bar's transform in one batched style recalc
+  // instead of JS scheduling many separate animations, which is what used
+  // to stutter under throttling/low-power mode. Deliberately NOT gated
+  // behind prefers-reduced-motion: this chart reveal is the one motion
+  // this site keeps regardless of that setting, so it always plays.
+  const growChart = (selector) => {
+    const chart = document.querySelector(selector);
+    if (!chart) return;
 
-  // Grows each bar from its own baseline once the chart scrolls into view.
-  // Plain inline styles + Web Animations API: no CSS classes, so there's no
-  // cascade/specificity to fight, and without WAAPI support bars just sit
-  // at full size (animate() would be undefined and skip everything below).
-  const growChart = (chartSelector, barSelector, { axis, origin, groupSize = 1 }) => {
-    const chart = document.querySelector(chartSelector);
-    const bars = chart ? chart.querySelectorAll(barSelector) : [];
-    if (!chart || !bars.length || !bars[0].animate) return;
-
-    const values = chart.querySelectorAll('.frame-chart-value, .zone-chart-value');
-    const collapsed = axis === 'x' ? 'scaleX(0)' : 'scaleY(0)';
-    const full = axis === 'x' ? 'scaleX(1)' : 'scaleY(1)';
-
-    if (!reduceMotion) {
-      bars.forEach((bar) => {
-        bar.style.transformOrigin = typeof origin === 'function' ? origin(bar) : origin;
-        bar.style.transform = collapsed;
-      });
-    }
-    values.forEach((value) => { value.style.opacity = '0'; });
+    chart.classList.add('is-armed');
 
     const observer = new IntersectionObserver(([entry]) => {
       if (!entry.isIntersecting) return;
-
-      if (!reduceMotion) {
-        bars.forEach((bar, i) => {
-          const delay = Math.floor(i / groupSize) * 90;
-          bar.animate([{ transform: collapsed }, { transform: full }], {
-            duration: 650,
-            delay,
-            easing: EASE,
-            fill: 'forwards',
-          });
-        });
-      }
-
-      values.forEach((value, i) => {
-        const delay = Math.floor(i / groupSize) * 90 + (reduceMotion ? 0 : 500);
-        value.animate([{ opacity: 0 }, { opacity: 1 }], {
-          duration: reduceMotion ? 500 : 300,
-          delay,
-          easing: 'ease',
-          fill: 'forwards',
-        });
-      });
-
+      requestAnimationFrame(() => chart.classList.add('is-drawn'));
       observer.disconnect();
     }, { threshold: 0.3 });
 
     observer.observe(chart);
   };
 
-  growChart('.zone-chart', '.zone-chart-bar--pueblo, .zone-chart-bar--lago, .zone-chart-bar--ciudad', {
-    axis: 'y',
-    origin: '0px 168px',
-    groupSize: 3,
-  });
-
-  growChart('.frame-chart', '.frame-chart-bar', {
-    axis: 'x',
-    origin: (bar) => `${bar.getAttribute('x')}px 0px`,
-  });
+  growChart('.zone-chart');
+  growChart('.frame-chart');
 })();

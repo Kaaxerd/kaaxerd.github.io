@@ -610,6 +610,13 @@ a.lang-flag-link:focus-visible {
   font-size: 1.4rem;
 }
 
+.subsystem-body {
+  /* Flex items default to a content-based min-width, so the code listing's
+     intrinsic width (min-width: max-content) would otherwise push this
+     column — and the whole page — wider than the viewport on mobile. */
+  min-width: 0;
+}
+
 .subsystem-body p {
   margin: 0 0 0.75rem;
 }
@@ -723,17 +730,6 @@ a.lang-flag-link:focus-visible {
   text-anchor: end;
 }
 
-.frame-chart-target {
-  stroke: var(--green);
-  stroke-width: 2;
-  stroke-dasharray: 4 3;
-}
-
-.frame-chart-target-label {
-  font-size: 13px;
-  font-weight: 600;
-}
-
 .frame-chart-label {
   font-size: 16px;
   font-weight: 600;
@@ -779,12 +775,6 @@ a.lang-flag-link:focus-visible {
   fill: var(--ink);
 }
 
-.zone-chart-target {
-  stroke: var(--green);
-  stroke-width: 2;
-  stroke-dasharray: 4 3;
-}
-
 .zone-chart-zone-label {
   font-size: 13px;
   font-weight: 600;
@@ -796,10 +786,74 @@ a.lang-flag-link:focus-visible {
 .zone-chart-bar--lago, .zone-chart-swatch--lago { fill: var(--green); }
 .zone-chart-bar--ciudad, .zone-chart-swatch--ciudad { fill: var(--violet); }
 
-/* Bar-grow reveal is handled entirely by script.js via the Web Animations
-   API on inline styles — no CSS classes involved, so there's no cascade or
-   specificity to get wrong. Without JS/WAAPI support the bars just render
-   at full size. */
+/* Bar-grow reveal: transform-origin is fixed geometry, so it's declared
+   here once instead of computed per bar in JS. script.js only toggles two
+   classes (armed → drawn, same pattern as .method-triangle below); the
+   browser then batches every bar's transition in one style recalc instead
+   of juggling many separately scheduled animations — the part that used to
+   stutter under throttling/low-power mode. Without that JS toggle the bars
+   simply render at full size (no collapsed state baked into the base
+   rules), so nothing breaks if it doesn't run. */
+.zone-chart-bar--pueblo,
+.zone-chart-bar--lago,
+.zone-chart-bar--ciudad {
+  transform-origin: 0px 168px;
+  transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1) var(--bar-delay, 0ms);
+}
+
+.zone-chart-group--1 { --bar-delay: 0ms; }
+.zone-chart-group--2 { --bar-delay: 200ms; }
+.zone-chart-group--3 { --bar-delay: 400ms; }
+.zone-chart-group--4 { --bar-delay: 600ms; }
+
+.zone-chart.is-armed .zone-chart-bar--pueblo,
+.zone-chart.is-armed .zone-chart-bar--lago,
+.zone-chart.is-armed .zone-chart-bar--ciudad {
+  transform: scaleY(0);
+}
+
+.zone-chart.is-drawn .zone-chart-bar--pueblo,
+.zone-chart.is-drawn .zone-chart-bar--lago,
+.zone-chart.is-drawn .zone-chart-bar--ciudad {
+  transform: scaleY(1);
+}
+
+.frame-chart-bar {
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.frame-chart-bar--before {
+  transform-origin: 234px 0;
+  transition-delay: 0ms;
+}
+
+.frame-chart-bar--after {
+  transform-origin: 79.6px 0;
+  transition-delay: 120ms;
+}
+
+.frame-chart.is-armed .frame-chart-bar {
+  transform: scaleX(0);
+}
+
+.frame-chart.is-drawn .frame-chart-bar {
+  transform: scaleX(1);
+}
+
+.zone-chart-value,
+.frame-chart-value {
+  transition: opacity 0.5s ease var(--bar-delay, 0ms);
+}
+
+.zone-chart.is-armed .zone-chart-value,
+.frame-chart.is-armed .frame-chart-value {
+  opacity: 0;
+}
+
+.zone-chart.is-drawn .zone-chart-value,
+.frame-chart.is-drawn .frame-chart-value {
+  opacity: 1;
+}
 
 .listing {
   margin: 2rem 0;
@@ -823,6 +877,66 @@ a.lang-flag-link:focus-visible {
   display: block;
   font: inherit;
   min-width: max-content;
+}
+
+/* Each listing opens on just the function that carries the section's
+   argument; the surrounding includes/structs/setup sit collapsed behind a
+   native <details> — no JS, keyboard-operable, identical on phone and
+   desktop. */
+.listing-defs {
+  background: var(--ink);
+  border-radius: 4px 4px 0 0;
+  overflow: hidden;
+}
+
+.listing-defs summary {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1rem 1.25rem;
+  font-family: 'Rubik', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--paper) 70%, var(--ink));
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.listing-defs summary::-webkit-details-marker {
+  display: none;
+}
+
+.listing-defs summary::before {
+  content: '';
+  flex-shrink: 0;
+  border-style: solid;
+  border-width: 5px 0 5px 7px;
+  border-color: transparent transparent transparent currentColor;
+  transition: transform 0.2s ease;
+}
+
+.listing-defs[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.listing-defs summary:hover,
+.listing-defs summary:focus-visible {
+  color: var(--paper);
+}
+
+.listing-defs-count {
+  color: color-mix(in srgb, var(--paper) 45%, var(--ink));
+  font-weight: 400;
+}
+
+.listing-defs pre {
+  border-radius: 0;
+  border-top: 1px solid color-mix(in srgb, var(--paper) 15%, var(--ink));
+}
+
+pre.listing-core {
+  border-radius: 0 0 4px 4px;
 }
 
 .listing .ln {
@@ -1000,13 +1114,36 @@ blockquote {
     width: 72px;
   }
 
+  /* Code lines are wider than a phone screen: wrap instead of forcing a
+     native horizontal scrollbar inside the listing. */
+  .listing pre {
+    padding: 1rem;
+    overflow-x: hidden;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 0.8rem;
+  }
+
+  .listing code {
+    min-width: 0;
+  }
+
+  .listing mark {
+    margin-inline: -1rem;
+    padding-inline: 1rem;
+  }
+
+  .listing-defs summary {
+    padding: 0.85rem 1rem;
+    font-size: 0.8rem;
+  }
+
   /* The chart scales down with the column: enlarge its text to compensate. */
   .frame-chart-label {
     font-size: 17px;
   }
 
   .frame-chart-value,
-  .frame-chart-target-label,
   .frame-chart-axis-title,
   .frame-chart-hint {
     font-size: 14.5px;
