@@ -1052,9 +1052,11 @@ blockquote {
 
 .chapter--closing blockquote {
   margin: 0 auto;
+  font-family: 'Rubik', sans-serif;
+  font-style: normal;
   font-weight: 400;
-  font-size: clamp(1.9rem, 3vw + 1rem, 3.75rem);
-  line-height: 1.15;
+  font-size: clamp(1.6rem, 2.4vw + 0.9rem, 3rem);
+  line-height: 1.25;
   color: var(--yellow);
   text-wrap: balance;
 }
