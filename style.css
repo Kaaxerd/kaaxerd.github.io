@@ -1319,7 +1319,7 @@ a {
   padding: 0 var(--seq-pad);
   background-color: var(--seq-lanes-bg);
   background-image:
-    repeating-linear-gradient(90deg, var(--seq-tick) 0 1px, transparent 1px calc(100% / 8)),
+    repeating-linear-gradient(90deg, var(--seq-tick) 0 1px, transparent 1px calc(100% / var(--seq-span))),
     linear-gradient(270deg, var(--seq-tick) 0 1px, transparent 1px);
   background-origin: content-box;
   background-clip: border-box;
@@ -1352,8 +1352,8 @@ a {
 .seq-ruler {
   background-color: var(--card);
   background-image:
-    repeating-linear-gradient(90deg, color-mix(in srgb, var(--foreground) 30%, transparent) 0 1px, transparent 1px calc(100% / 8)),
-    repeating-linear-gradient(90deg, color-mix(in srgb, var(--foreground) 16%, transparent) 0 1px, transparent 1px calc(100% / 32)),
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--foreground) 30%, transparent) 0 1px, transparent 1px calc(100% / var(--seq-span))),
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--foreground) 16%, transparent) 0 1px, transparent 1px calc(100% / (var(--seq-span) * 4))),
     linear-gradient(270deg, color-mix(in srgb, var(--foreground) 30%, transparent) 0 1px, transparent 1px);
   background-size: 100% 100%, 100% 30%, 100% 100%;
   background-position: 0 0, 0 100%, 0 0;
@@ -1362,7 +1362,7 @@ a {
 .seq-year {
   position: absolute;
   top: 0.3rem;
-  left: calc(var(--seq-pad) + (100% - 2 * var(--seq-pad)) * var(--at) / 8 + 0.3rem);
+  left: calc(var(--seq-pad) + (100% - 2 * var(--seq-pad)) * var(--at) / var(--seq-span) + 0.3rem);
   font-size: 0.7rem;
   font-weight: 500;
   line-height: 1;
