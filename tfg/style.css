@@ -1046,7 +1046,7 @@ blockquote {
   flex-direction: column;
   justify-content: center;
   max-width: 62rem;
-  padding-block: clamp(2.5rem, 8vh, 5rem);
+  padding-block: clamp(2.5rem, 8vh, 5rem) clamp(1rem, 3vh, 2rem);
   text-align: center;
 }
 
@@ -1062,15 +1062,27 @@ blockquote {
 }
 
 .chapter--closing .chapter-body p {
-  max-width: 36rem;
+  max-width: 40rem;
   margin: clamp(2.5rem, 7vh, 4rem) auto 0;
-  font-size: 1.05rem;
+  font-size: clamp(1.25rem, 1vw + 1rem, 1.6rem);
   color: var(--paper);
   text-wrap: pretty;
 }
 
 .chapter--closing .hl {
   color: var(--yellow);
+}
+
+.site-legal {
+  padding: 0 var(--gutter) 2.5rem;
+  font-size: 0.875rem;
+  text-align: center;
+  color: var(--yellow);
+}
+
+.site-legal a {
+  color: inherit;
+  text-underline-offset: 0.2em;
 }
 
 /* Centred flags would overlap the full name on narrow screens: use the monogram. */

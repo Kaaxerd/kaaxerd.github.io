@@ -1,13 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- TODO i18n: el contenido sigue en espanol. Al traducirlo, borra este comentario
-       y la etiqueta robots de la linea siguiente para que Google indexe la pagina. -->
-  <meta name="robots" content="noindex">
-  <title>Análisis e investigación de Pokémon Escarlata y Púrpura | Harald Kleinschrot Colomer</title>
-  <meta name="description" content="Trabajo de Fin de Grado de Harald Kleinschrot Colomer: análisis e investigación del código de Pokémon Escarlata y Púrpura.">
+  <title>Analysis and research of Pokémon Scarlet and Violet | Harald Kleinschrot Colomer</title>
+  <meta name="description" content="Bachelor's thesis by Harald Kleinschrot Colomer: analysis and research of the code of Pokémon Scarlet and Violet.">
   <meta name="author" content="Harald Kleinschrot Colomer">
   <link rel="canonical" href="https://kaaxerd.github.io/en/tfg/">
   <link rel="alternate" hreflang="es" href="https://kaaxerd.github.io/tfg/">
@@ -17,24 +14,420 @@
 
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2314161a'/%3E%3Crect x='12.0' y='27.1' width='76.0' height='45.8' fill='none' stroke='%2355c3a6' stroke-width='3'/%3E%3Cg fill='%2355c3a6'%3E%3Crect x='8.0' y='23.1' width='8' height='8'/%3E%3Crect x='8.0' y='68.9' width='8' height='8'/%3E%3Crect x='84.0' y='23.1' width='8' height='8'/%3E%3Crect x='84.0' y='68.9' width='8' height='8'/%3E%3C/g%3E%3Cpath fill='%23f4f4f6' d='M21 63.9V36.1H28.2V46.8H39.5V36.1H46.7V63.9H39.5V52.7H28.2V63.9ZM51.6 63.9V36.1H58.8V48.4L69.8 36.1H78.8L68.5 47.5L79 63.9H70.4L63.4 52.4L58.8 56.6V63.9Z'/%3E%3C/svg%3E">
 
-  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@500&display=swap" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Rubik:wght@500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800&family=Playfair+Display:ital,wght@0,900;1,400&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../tfg/style.css">
 </head>
 <body>
-  <header class="page-header">
-    <a href="../" class="back-link">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
-      <span>Volver al portfolio</span>
+  <header class="site-bar">
+    <a href="../" class="site-name" aria-label="Harald Kleinschrot Colomer, go to the home page">
+      <span class="site-name-full" aria-hidden="true">Harald Kleinschrot Colomer</span>
+      <span class="site-name-short" aria-hidden="true">HK</span>
     </a>
+
+    <div class="lang-flags" role="group" aria-label="Website language">
+      <a class="lang-flag-link" href="../../tfg/" hreflang="es" title="View this page in Spanish" aria-label="View this page in Spanish"><svg viewBox="0 0 36 36" aria-hidden="true"><path fill="#C60A1D" d="M36 27c0 2.209-1.791 4-4 4H4c-2.209 0-4-1.791-4-4V9c0-2.209 1.791-4 4-4h28c2.209 0 4 1.791 4 4v18z"/><path fill="#FFC400" d="M0 12h36v12H0z"/><path fill="#EA596E" d="M9 17v3c0 1.657 1.343 3 3 3s3-1.343 3-3v-3H9z"/><path fill="#F4A2B2" d="M12 16h3v3h-3z"/><path fill="#DD2E44" d="M9 16h3v3H9z"/><ellipse fill="#EA596E" cx="12" cy="14.5" rx="3" ry="1.5"/><ellipse fill="#FFAC33" cx="12" cy="13.75" rx="3" ry=".75"/><path fill="#99AAB5" d="M7 16h1v7H7zm9 0h1v7h-1z"/><path fill="#66757F" d="M6 22h3v1H6zm9 0h3v1h-3zm-8-7h1v1H7zm9 0h1v1h-1z"/></svg></a>
+      <span class="lang-flag-link" aria-current="true" title="You are viewing this page in English"><svg viewBox="0 0 36 36" aria-hidden="true"><path fill="#00247D" d="M0 9.059V13h5.628zM4.664 31H13v-5.837zM23 25.164V31h8.335zM0 23v3.941L5.63 23zM31.337 5H23v5.837zM36 26.942V23h-5.631zM36 13V9.059L30.371 13zM13 5H4.664L13 10.837z"/><path fill="#CF1B2B" d="M25.14 23l9.712 6.801c.471-.479.808-1.082.99-1.749L28.627 23H25.14zM13 23h-2.141l-9.711 6.8c.521.53 1.189.909 1.938 1.085L13 23.943V23zm10-10h2.141l9.711-6.8c-.521-.53-1.188-.909-1.937-1.085L23 12.057V13zm-12.141 0L1.148 6.2C.677 6.68.34 7.282.157 7.949L7.372 13h3.487z"/><path fill="#EEE" d="M36 21H21v10h2v-5.836L31.335 31H32c1.117 0 2.126-.461 2.852-1.199L25.14 23h3.487l7.215 5.052c.093-.337.158-.686.158-1.052v-.058L30.369 23H36v-2zM0 21v2h5.63L0 26.941V27c0 1.091.439 2.078 1.148 2.8l9.711-6.8H13v.943l-9.914 6.941c.294.07.598.116.914.116h.664L13 25.163V31h2V21H0zM36 9c0-1.091-.439-2.078-1.148-2.8L25.141 13H23v-.943l9.915-6.942C32.62 5.046 32.316 5 32 5h-.663L23 10.837V5h-2v10h15v-2h-5.629L36 9.059V9zM13 5v5.837L4.664 5H4c-1.118 0-2.126.461-2.852 1.2l9.711 6.8H7.372L.157 7.949C.065 8.286 0 8.634 0 9v.059L5.628 13H0v2h15V5h-2z"/><path fill="#CF1B2B" d="M21 15V5h-6v10H0v6h15v10h6V21h15v-6z"/></svg></span>
+      <a class="lang-flag-link" href="../../de/tfg/" hreflang="de" title="View this page in German" aria-label="View this page in German"><svg viewBox="0 0 36 36" aria-hidden="true"><path fill="#FFCD05" d="M0 27c0 2.209 1.791 4 4 4h28c2.209 0 4-1.791 4-4v-4H0v4z"/><path fill="#ED1F24" d="M0 14h36v9H0z"/><path fill="#141414" d="M32 5H4C1.791 5 0 6.791 0 9v5h36V9c0-2.209-1.791-4-4-4z"/></svg></a>
+    </div>
   </header>
 
-  <main class="page-main">
-    <p class="eyebrow">Trabajo de Fin de Grado</p>
-    <h1 class="page-title">Análisis e investigación de Pokémon Escarlata y Púrpura</h1>
+  <div class="thesis-bar" aria-hidden="true">
+    <p class="thesis-bar-title">Analysis and research of Pokémon Scarlet and Violet</p>
+    <p class="thesis-bar-chapter"></p>
+  </div>
+
+  <section class="hero">
+    <div class="hero-content">
+      <p class="hero-kicker">Bachelor's Thesis</p>
+      <h1 class="page-title">Analysis and research of Pokémon Scarlet and Violet</h1>
+    </div>
+  </section>
+
+  <main class="thesis">
+    <section class="chapter" aria-labelledby="cap-1">
+      <header class="chapter-bar">
+        <p class="chapter-number" aria-hidden="true">1</p>
+        <h2 id="cap-1">The problem</h2>
+      </header>
+      <div class="chapter-body">
+        <p class="lead">Pokémon Scarlet and Violet (Game Freak, 2022) were the first open-world game in the main Pokémon series, running on the limited hardware of the Nintendo Switch. The shift to this kind of game exposed performance problems documented since launch by both the specialist press and players.</p>
+        <ul class="problems">
+          <li><strong class="goal-kw goal-kw--scarlet">Memory leak</strong> Gradual performance loss after long sessions, caused by poor pointer management on the heap.</li>
+          <li><strong class="goal-kw goal-kw--violet">Pop-in / draw distance</strong> Sudden appearance of models and textures, caused by an overly aggressive culling algorithm.</li>
+          <li><strong class="goal-kw goal-kw--scarlet">Frame pacing</strong> FPS drops and stuttering in high-load areas, caused by poor CPU-GPU synchronization.</li>
+          <li><strong class="goal-kw goal-kw--violet">Netcode</strong> Latency and connection errors, especially in Tera Raids, caused by an unoptimized peer-to-peer architecture.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="chapter" aria-labelledby="cap-2">
+      <header class="chapter-bar">
+        <p class="chapter-number" aria-hidden="true">2</p>
+        <h2 id="cap-2">Question and objectives</h2>
+      </header>
+      <div class="chapter-body">
+        <blockquote class="question">
+          <p>What are the <strong class="hl hl--scarlet">causes</strong> behind the <strong class="hl-medium hl--scarlet">poor performance</strong> of Pokémon Scarlet and Violet?</p>
+          <p>What <strong class="hl hl--violet">solutions</strong> can be proposed based on <strong class="hl-medium hl--violet">software engineering</strong>?</p>
+        </blockquote>
+        <p>This question leads to five specific objectives:</p>
+        <ul class="goals">
+          <li><strong class="goal-kw goal-kw--scarlet">Extract and decompile</strong> the game executable legally, using reverse engineering tools such as Ghidra.</li>
+          <li><strong class="goal-kw goal-kw--violet">Classify by subsystem</strong> the functions of the main module and identify those with the greatest impact.</li>
+          <li><strong class="goal-kw goal-kw--scarlet">Analyze in depth</strong> the critical subsystems to detect problematic architectural patterns.</li>
+          <li><strong class="goal-kw goal-kw--violet">Measure empirically</strong> performance through frame timing and pop-in detection.</li>
+          <li><strong class="goal-kw goal-kw--scarlet">Propose alternatives</strong> for viable optimization, grounded in industry best practices.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="chapter" aria-labelledby="cap-3">
+      <header class="chapter-bar">
+        <p class="chapter-number" aria-hidden="true">3</p>
+        <h2 id="cap-3">Methodology</h2>
+      </header>
+      <div class="chapter-body">
+        <p>The diagnosis combines three axes that are cross-checked against each other to validate every finding.</p>
+
+        <div class="method-triangle">
+          <p class="method-axis method-axis--top">
+            <a class="method-link" href="#cap-4">
+              <strong class="hl hl--scarlet">Static analysis</strong>
+              <span>of the decompiled code</span>
+              <span class="method-where">Applied in chapter&nbsp;4</span>
+            </a>
+          </p>
+          <svg class="method-shape" viewBox="0 0 200 175" aria-hidden="true">
+            <path class="method-fill" d="M100 8 L8 167 L192 167 Z" fill="var(--yellow)"/>
+            <path class="method-edge" d="M100 8 L8 167 L192 167 Z" pathLength="1"/>
+          </svg>
+          <div class="method-bottom">
+            <p class="method-axis method-axis--left">
+              <a class="method-link" href="#cap-5">
+                <strong class="hl hl--green">Empirical profiling</strong>
+                <span>of performance</span>
+                <span class="method-where">Measured in chapter&nbsp;5</span>
+              </a>
+            </p>
+            <p class="method-axis method-axis--right">
+              <a class="method-link" href="#cap-5">
+                <strong class="hl hl--violet">Triangulation</strong>
+                <span>with sources</span>
+                <span class="method-where">Cross-checked in chapter&nbsp;5</span>
+              </a>
+            </p>
+          </div>
+        </div>
+
+        <p class="aside-note">Legal methodology: no protected code is modified or distributed. Only the game's external behavior is observed (Art. 100.3 LPI, Spanish Intellectual Property Act) and cross-checked against verified secondary sources.</p>
+      </div>
+    </section>
+
+    <section class="chapter" aria-labelledby="cap-4">
+      <header class="chapter-bar">
+        <p class="chapter-number" aria-hidden="true">4</p>
+        <h2 id="cap-4">Development: findings by subsystem</h2>
+      </header>
+      <div class="chapter-body">
+        <p>Classifying the binary file <code>main</code> by functional subsystem identified the three components with the greatest impact on the game's performance.</p>
+
+        <div class="subsystem">
+          <img class="subsystem-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1007.png" width="96" height="96" alt="" loading="lazy">
+          <div class="subsystem-body">
+            <h3 class="subsystem-name hl hl--scarlet">Memory management</h3>
+            <p><strong>Problem:</strong> variable-size dynamic allocations with no segregation by type and no structured reuse, with incomplete release paths that fragment the heap.</p>
+            <p><strong>Proposal:</strong> replace the scheme with <em>pool allocators</em> segregated by resource type, with constant-time allocation and release.</p>
+            <figure class="listing">
+              <details class="listing-defs">
+                <summary>Includes, structures and initialization <span class="listing-defs-count">(29 lines)</span></summary>
+                <pre><code><span class="ln">1</span>	<span class="tok-pre">#include &lt;stddef.h&gt;</span>
+<span class="ln">2</span>
+<span class="ln">3</span>	<span class="tok-kw">typedef</span> <span class="tok-kw">struct</span> {
+<span class="ln">4</span>	    <span class="tok-type">Block</span>* next;
+<span class="ln">5</span>	} <span class="tok-type">Block</span>;
+<span class="ln">6</span>
+<span class="ln">7</span>	<span class="tok-kw">typedef</span> <span class="tok-kw">struct</span> {
+<span class="ln">8</span>	    <span class="tok-type">Block</span>* freeList;
+<span class="ln">9</span>	    <span class="tok-type">size_t</span> blockSize;
+<span class="ln">10</span>	} <span class="tok-type">Pool</span>;
+<span class="ln">11</span>
+<span class="ln">12</span>	<span class="tok-comment">// Walks the buffer and builds the linked list</span>
+<span class="ln">13</span>	<span class="tok-kw">void</span> <span class="tok-fn">poolInitialization</span>(
+<span class="ln">14</span>	    <span class="tok-type">Pool</span>* pool,
+<span class="ln">15</span>	    <span class="tok-kw">void</span>* buffer,
+<span class="ln">16</span>	    <span class="tok-type">size_t</span> bufferSize,
+<span class="ln">17</span>	    <span class="tok-type">size_t</span> blockSize,
+<span class="ln">18</span>	    <span class="tok-type">size_t</span> capacity
+<span class="ln">19</span>	) {
+<span class="ln">20</span>	    pool-&gt;blockSize = blockSize;
+<span class="ln">21</span>	    pool-&gt;freeList = <span class="tok-kw">NULL</span>;
+<span class="ln">22</span>
+<span class="ln">23</span>	    <span class="tok-kw">for</span>(<span class="tok-type">size_t</span> i = 0; i &lt; capacity; i++) {
+<span class="ln">24</span>	        <span class="tok-type">Block</span>* b = (<span class="tok-type">Block</span>*)((<span class="tok-type">char</span>*)buffer + i * blockSize);
+<span class="ln">25</span>	        b-&gt;next = pool-&gt;freeList;
+<span class="ln">26</span>	        pool-&gt;freeList = b;
+<span class="ln">27</span>	    }
+<span class="ln">28</span>	}
+<span class="ln">29</span></code></pre>
+              </details>
+              <pre class="listing-core"><code><span class="ln">30</span>	<span class="tok-comment">// Reserve block: pop from the front of the list</span>
+<span class="ln">31</span>	<span class="tok-kw">void</span>* <span class="tok-fn">poolAllocation</span>(<span class="tok-type">Pool</span>* pool) {
+<span class="ln">32</span>	    <span class="tok-kw">if</span>(!pool-&gt;freeList) {
+<span class="ln">33</span>	        <span class="tok-kw">return</span> <span class="tok-kw">NULL</span>;
+<span class="ln">34</span>	    }
+<span class="ln">35</span>
+<span class="ln">36</span>	    <span class="tok-type">Block</span>* b = pool-&gt;freeList;
+<span class="ln">37</span>	    pool-&gt;freeList = b-&gt;next;
+<span class="ln">38</span>	    <span class="tok-kw">return</span> (<span class="tok-kw">void</span>*)b;
+<span class="ln">39</span>	}
+<span class="ln">40</span>
+<span class="ln">41</span>	<span class="tok-comment">// Free block: push to the front of the list</span>
+<span class="ln">42</span>	<span class="tok-kw">void</span> <span class="tok-fn">poolFree</span>(<span class="tok-type">Pool</span>* pool, <span class="tok-kw">void</span>* ptr) {
+<span class="ln">43</span>	    <span class="tok-type">Block</span>* b = (<span class="tok-type">Block</span>*)ptr;
+<span class="ln">44</span>	    b-&gt;next = pool-&gt;freeList;
+<span class="ln">45</span>	    pool-&gt;freeList = b;
+<span class="ln">46</span>	}</code></pre>
+              <figcaption>C++ implementation of the pool allocator: constant-time block allocation and release.</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div class="subsystem">
+          <img class="subsystem-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/967.png" width="96" height="96" alt="" loading="lazy">
+          <div class="subsystem-body">
+            <h3 class="subsystem-name hl hl--green">Streaming, culling and LOD</h3>
+            <p><strong>Problem:</strong> entity visibility is decided by rigid distance thresholds, coupled to immediately destroying the asset when it leaves range, with no spatial hysteresis.</p>
+            <p><strong>Proposal:</strong> a FIFO queue of streaming requests with a per-frame loading budget and hysteresis bands between visibility states.</p>
+            <figure class="listing">
+              <details class="listing-defs">
+                <summary>Structures and FIFO queue (push/pop) <span class="listing-defs-count">(40 lines)</span></summary>
+                <pre><code><span class="ln">1</span>	<span class="tok-pre">#include &lt;stddef.h&gt;</span>
+<span class="ln">2</span>
+<span class="ln">3</span>	<span class="tok-kw">typedef</span> <span class="tok-kw">struct</span> {
+<span class="ln">4</span>	    <span class="tok-kw">const</span> <span class="tok-type">char</span>* path;
+<span class="ln">5</span>	    <span class="tok-type">size_t</span> sizeBytes;
+<span class="ln">6</span>	    <span class="tok-type">AssetRequest</span>* next;
+<span class="ln">7</span>	} <span class="tok-type">AssetRequest</span>;
+<span class="ln">8</span>
+<span class="ln">9</span>	<span class="tok-kw">typedef</span> <span class="tok-kw">struct</span> {
+<span class="ln">10</span>	    <span class="tok-type">AssetRequest</span>* head;
+<span class="ln">11</span>	    <span class="tok-type">AssetRequest</span>* tail;
+<span class="ln">12</span>	} <span class="tok-type">StreamQueue</span>;
+<span class="ln">13</span>
+<span class="ln">14</span>	<span class="tok-comment">// Enqueue request at the end</span>
+<span class="ln">15</span>	<span class="tok-kw">void</span> <span class="tok-fn">queuePush</span>(<span class="tok-type">StreamQueue</span>* q, <span class="tok-type">AssetRequest</span>* req) {
+<span class="ln">16</span>	    req-&gt;next = <span class="tok-kw">NULL</span>;
+<span class="ln">17</span>
+<span class="ln">18</span>	    <span class="tok-kw">if</span>(!q-&gt;tail) {
+<span class="ln">19</span>	        q-&gt;head = q-&gt;tail = req;
+<span class="ln">20</span>	    } <span class="tok-kw">else</span> {
+<span class="ln">21</span>	        q-&gt;tail-&gt;next = req;
+<span class="ln">22</span>	        q-&gt;tail = req;
+<span class="ln">23</span>	    }
+<span class="ln">24</span>	}
+<span class="ln">25</span>
+<span class="ln">26</span>	<span class="tok-comment">// Dequeue request from the front</span>
+<span class="ln">27</span>	<span class="tok-type">AssetRequest</span>* <span class="tok-fn">queuePop</span>(<span class="tok-type">StreamQueue</span>* q) {
+<span class="ln">28</span>	    <span class="tok-kw">if</span>(!q-&gt;head) {
+<span class="ln">29</span>	        <span class="tok-kw">return</span> <span class="tok-kw">NULL</span>;
+<span class="ln">30</span>	    }
+<span class="ln">31</span>	    <span class="tok-type">AssetRequest</span>* req = q-&gt;head;
+<span class="ln">32</span>	    q-&gt;head = req-&gt;next;
+<span class="ln">33</span>
+<span class="ln">34</span>	    <span class="tok-kw">if</span>(!q-&gt;head) {
+<span class="ln">35</span>	        q-&gt;tail = <span class="tok-kw">NULL</span>;
+<span class="ln">36</span>	    }
+<span class="ln">37</span>
+<span class="ln">38</span>	    <span class="tok-kw">return</span> req;
+<span class="ln">39</span>	}
+<span class="ln">40</span></code></pre>
+              </details>
+              <pre class="listing-core"><code><span class="ln">41</span>	<span class="tok-comment">// Process the stream with a per-frame byte budget</span>
+<span class="ln">42</span>	<span class="tok-kw">void</span> <span class="tok-fn">streamProcessFrame</span>(<span class="tok-type">StreamQueue</span>* q, <span class="tok-type">size_t</span> budgetBytes) {
+<span class="ln">43</span>	    <span class="tok-type">size_t</span> processed = 0;
+<span class="ln">44</span>
+<span class="ln">45</span>	    <span class="tok-kw">while</span>(q-&gt;head &amp;&amp; processed &lt; budgetBytes) {
+<span class="ln">46</span>	        <span class="tok-type">AssetRequest</span>* req = queue_pop(q);
+<span class="ln">47</span>	        loadAsset(req-&gt;path);
+<span class="ln">48</span>	        processed += req-&gt;sizeBytes;
+<span class="ln">49</span>	    }
+<span class="ln">50</span>	}</code></pre>
+              <figcaption>C++ implementation of the streaming FIFO queue: the per-frame budget limits blocking loads.</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div class="subsystem">
+          <img class="subsystem-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1008.png" width="96" height="96" alt="" loading="lazy">
+          <div class="subsystem-body">
+            <h3 class="subsystem-name hl hl--violet">Performance and concurrency</h3>
+            <p><strong>Problem:</strong> game loop in a <em>lockstep</em> configuration, with logic and rendering coupled and rigid synchronization between CPU and GPU.</p>
+            <p><strong>Proposal:</strong> a fixed timestep with an accumulator that decouples the simulation from the effective framerate.</p>
+            <figure class="listing">
+              <details class="listing-defs">
+                <summary>Constants and initial state <span class="listing-defs-count">(6 lines)</span></summary>
+                <pre><code><span class="ln">1</span>	<span class="tok-kw">const</span> <span class="tok-type">float</span> FIXED_DELTA_TIME = 1.0f / 30.0f; <span class="tok-comment">// 30 FPS</span>
+<span class="ln">2</span>	<span class="tok-kw">const</span> <span class="tok-type">int</span> MAX_STEPS = 3;
+<span class="ln">3</span>
+<span class="ln">4</span>	<span class="tok-type">float</span> accumulator = 0.0f;
+<span class="ln">5</span>	<span class="tok-type">float</span> prevTime = get_time();
+<span class="ln">6</span></code></pre>
+              </details>
+              <pre class="listing-core"><code><span class="ln">7</span>	<span class="tok-kw">while</span>(running) {
+<span class="ln">8</span>	    <span class="tok-type">float</span> curTime = get_time();
+<span class="ln">9</span>	    <span class="tok-type">float</span> frameTime = curTime - prevTime;
+<span class="ln">10</span>	    prevTime = curTime;
+<span class="ln">11</span>
+<span class="ln">12</span>	    <span class="tok-kw">if</span>(frameTime &gt; 0.1f) {
+<span class="ln">13</span>	        frameTime = 0.1f; <span class="tok-comment">// Avoid excessive accumulation</span>
+<span class="ln">14</span>	    }
+<span class="ln">15</span>
+<span class="ln">16</span>	    accumulator += frameTime;
+<span class="ln">17</span>
+<span class="ln">18</span>	    <span class="tok-comment">// Advance the logic in fixed steps, limiting the number of steps per frame</span>
+<span class="ln">19</span>	    <span class="tok-type">int</span> steps = 0;
+<span class="ln">20</span>	    <span class="tok-kw">while</span>(accumulator &gt;= FIXED_DELTA_TIME &amp;&amp; steps &lt; MAX_STEPS) {
+<span class="ln">21</span>	        update(FIXED_DELTA_TIME);
+<span class="ln">22</span>	        accumulator -= FIXED_DELTA_TIME;
+<span class="ln">23</span>	        steps++;
+<span class="ln">24</span>	    }
+<span class="ln">25</span>
+<span class="ln">26</span>	    <span class="tok-comment">// Compute alpha for interpolation between states</span>
+<span class="ln">27</span>	    <span class="tok-type">float</span> alpha = accumulator / FIXED_DELTA_TIME;
+<span class="ln">28</span>	    render(alpha);
+<span class="ln">29</span>	}</code></pre>
+              <figcaption>C++ implementation of the fixed timestep with accumulator: the loop decoupled from the logic.</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="chapter" aria-labelledby="cap-5">
+      <header class="chapter-bar">
+        <p class="chapter-number" aria-hidden="true">5</p>
+        <h2 id="cap-5">Empirical results</h2>
+      </header>
+      <div class="chapter-body">
+        <p>Official patches improved the average framerate documented by the specialist press, but did not solve the underlying problem:</p>
+        <figure class="stat">
+          <p class="stat-figure">18–20 <span class="stat-sep">→</span> 22–28 <span class="stat-unit">FPS</span></p>
+          <svg class="frame-chart" viewBox="0 0 360 204" role="img" aria-labelledby="frame-chart-title frame-chart-desc">
+            <title id="frame-chart-title">Frame time before and after patch 1.2.0</title>
+            <desc id="frame-chart-desc">Ranges derived from the published average framerate (1000 / FPS). Before the patch: 18 to 20 FPS, that is 50.0 to 55.6 ms per frame. After: 22 to 28 FPS, 35.7 to 45.5 ms per frame. Neither range reaches the 33.3 ms budget required by the 30 FPS target. Fewer milliseconds is better.</desc>
+
+            <text class="frame-chart-label frame-chart-label--end" x="294.5" y="44">Before patch 1.2.0</text>
+            <rect class="frame-chart-bar frame-chart-bar--before" x="234" y="52" width="60.5" height="24" rx="4"/>
+            <text class="frame-chart-value frame-chart-label--end" x="294.5" y="92">50.0–55.6 ms · 18–20 FPS</text>
+
+            <text class="frame-chart-label" x="79.6" y="116">After patch 1.2.0</text>
+            <rect class="frame-chart-bar frame-chart-bar--after" x="79.6" y="124" width="105.8" height="24" rx="4"/>
+            <text class="frame-chart-value" x="79.6" y="164">35.7–45.5 ms · 22–28 FPS</text>
+
+            <text class="frame-chart-axis-title" x="180" y="192">ms per frame</text>
+            <text class="frame-chart-hint" x="0" y="192">← better</text>
+            <text class="frame-chart-hint frame-chart-hint--end" x="360" y="192">worse →</text>
+          </svg>
+          <figcaption class="stat-caption">Average framerate before and after patch 1.2.0 (Digital Foundry / SwitchUp, 2023), expressed as frame time (1000 / FPS). Overall stability improved, but the 33.3 ms budget of 30 FPS was not reached and the underlying memory leak was not fixed.</figcaption>
+        </figure>
+
+        <p>To go beyond this public data, I measured the observable performance in my own capture using frame rate, frame time (FFprobe) and indirect indicators of memory saturation, across three areas with different technical profiles, each designed to force a different bottleneck:</p>
+        <div class="zones">
+          <div class="zone zone--scarlet">
+            <h3 class="zone-name hl hl--scarlet">Artazon</h3>
+            <p class="stat-figure">8.42 <span class="stat-unit">σ FPS</span></p>
+            <p class="zone-caption">Semi-open area of dense vegetation: it never stabilizes over the whole clip, showing the greatest variability of the three areas due to continuous LOD recalculation and frustum culling.</p>
+          </div>
+          <div class="zone zone--green">
+            <h3 class="zone-name hl hl--green">Casseroya Lake</h3>
+            <p class="stat-figure">56.1 <span class="stat-sep">→</span> 32.4 <span class="stat-unit">FPS</span></p>
+            <p class="zone-caption">Aquatic environment with active wildlife: the highest average of the three areas hides short, intense drops — the 1% low falls to 32.4 FPS due to atomic contention when assets activate.</p>
+          </div>
+          <div class="zone zone--violet">
+            <h3 class="zone-name hl hl--violet">Mesagoza</h3>
+            <p class="stat-figure">34.3<span class="stat-unit">%</span></p>
+            <p class="zone-caption">The area with the most simultaneous entities: that 34.3% of duplicated frames and the 1 FPS minimums come from thread contention and blocking asset loading.</p>
+          </div>
+        </div>
+
+        <figure class="stat">
+          <svg class="zone-chart" viewBox="0 0 400 192" role="img" aria-labelledby="zone-chart-title zone-chart-desc">
+            <title id="zone-chart-title">Average FPS, median, 1% low and 5% low across the three areas</title>
+            <desc id="zone-chart-desc">Average FPS: 48.8 in Artazon, 56.1 in Casseroya Lake, 39.5 in Mesagoza. Median FPS: 48, 60 and 41. 1% low: 33, 32.4 and 5.6. 5% low: 37, 41.9 and 29.5. More FPS is better.</desc>
+
+            <g class="zone-chart-legend">
+              <rect x="20" y="8" width="10" height="10" class="zone-chart-swatch--pueblo"/>
+              <text x="34" y="17">Artazon</text>
+              <rect x="170" y="8" width="10" height="10" class="zone-chart-swatch--lago"/>
+              <text x="184" y="17">Casseroya Lake</text>
+              <rect x="290" y="8" width="10" height="10" class="zone-chart-swatch--ciudad"/>
+              <text x="304" y="17">Mesagoza</text>
+            </g>
+
+            <line class="zone-chart-axis" x1="33" x2="367" y1="168" y2="168"/>
+
+            <g class="zone-chart-group zone-chart-group--1">
+              <rect class="zone-chart-bar--pueblo" x="33" y="75.3" width="18" height="92.7" rx="2"/>
+              <rect class="zone-chart-bar--lago" x="56" y="61.4" width="18" height="106.6" rx="2"/>
+              <rect class="zone-chart-bar--ciudad" x="79" y="93" width="18" height="75" rx="2"/>
+              <text class="zone-chart-value" x="42" y="71.3">48.8</text>
+              <text class="zone-chart-value" x="65" y="57.4">56.1</text>
+              <text class="zone-chart-value" x="88" y="89">39.5</text>
+              <text class="zone-chart-zone-label" x="65" y="182">Average FPS</text>
+            </g>
+
+            <g class="zone-chart-group zone-chart-group--2">
+              <rect class="zone-chart-bar--pueblo" x="123" y="76.8" width="18" height="91.2" rx="2"/>
+              <rect class="zone-chart-bar--lago" x="146" y="54" width="18" height="114" rx="2"/>
+              <rect class="zone-chart-bar--ciudad" x="169" y="90.1" width="18" height="77.9" rx="2"/>
+              <text class="zone-chart-value" x="132" y="72.8">48</text>
+              <text class="zone-chart-value" x="155" y="50">60</text>
+              <text class="zone-chart-value" x="178" y="86.1">41</text>
+              <text class="zone-chart-zone-label" x="155" y="182">Median FPS</text>
+            </g>
+
+            <g class="zone-chart-group zone-chart-group--3">
+              <rect class="zone-chart-bar--pueblo" x="213" y="105.3" width="18" height="62.7" rx="2"/>
+              <rect class="zone-chart-bar--lago" x="236" y="106.4" width="18" height="61.6" rx="2"/>
+              <rect class="zone-chart-bar--ciudad" x="259" y="157.4" width="18" height="10.6" rx="2"/>
+              <text class="zone-chart-value" x="222" y="101.3">33</text>
+              <text class="zone-chart-value" x="245" y="102.4">32.4</text>
+              <text class="zone-chart-value" x="268" y="153.4">5.6</text>
+              <text class="zone-chart-zone-label" x="245" y="182">1% low</text>
+            </g>
+
+            <g class="zone-chart-group zone-chart-group--4">
+              <rect class="zone-chart-bar--pueblo" x="303" y="97.7" width="18" height="70.3" rx="2"/>
+              <rect class="zone-chart-bar--lago" x="326" y="88.4" width="18" height="79.6" rx="2"/>
+              <rect class="zone-chart-bar--ciudad" x="349" y="112" width="18" height="56" rx="2"/>
+              <text class="zone-chart-value" x="312" y="93.7">37</text>
+              <text class="zone-chart-value" x="335" y="84.4">41.9</text>
+              <text class="zone-chart-value" x="358" y="108">29.5</text>
+              <text class="zone-chart-zone-label" x="335" y="182">5% low</text>
+            </g>
+          </svg>
+          <figcaption class="stat-caption">Average FPS, median, 1% low and 5% low across the three recorded areas. The gap between the average and the 1% low reveals the drops that a simple average hides, especially in Mesagoza.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="chapter chapter--closing" aria-labelledby="cap-6">
+      <header class="chapter-bar">
+        <p class="chapter-number" aria-hidden="true">6</p>
+        <h2 id="cap-6">Conclusions</h2>
+      </header>
+      <div class="chapter-body">
+        <blockquote>The performance problems of Pokémon Scarlet and Violet are not a consequence of the console's hardware limitations, but of <strong class="hl">architectural decisions</strong> in the engine.</blockquote>
+        <p>The combined methodology of <strong class="hl hl--scarlet">reverse engineering</strong>, <strong class="hl hl--green">profiling</strong> and <strong class="hl hl--violet">source triangulation</strong> is transferable to any video game developed on hardware with limited resources.</p>
+      </div>
+      <footer class="site-legal">
+        <p>Pokémon is property of Nintendo, Game Freak, Creatures Inc. and The Pokémon Company. Sprites are taken from <a href="https://pokeapi.co/">PokeAPI</a>.</p>
+      </footer>
+    </section>
   </main>
+
 
   <script src="../../tfg/script.js"></script>
 </body>
