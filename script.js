@@ -521,16 +521,24 @@
     );
   }
 
+  let currentBar = null;
+  let currentSpan = Infinity;
   bars.forEach((bar) => {
     const props = getComputedStyle(bar);
     const from = parseFloat(props.getPropertyValue("--from"));
     const to = parseFloat(props.getPropertyValue("--to"));
     bar.classList.toggle("seq-bar--label-start", from - start > start + span - to);
+    if (todayYear >= from && todayYear < to && to - from < currentSpan) {
+      currentBar = bar;
+      currentSpan = to - from;
+    }
   });
 
   function select(bar) {
     bars.forEach((b) => b.setAttribute("aria-pressed", String(b === bar)));
   }
+
+  if (currentBar) select(currentBar);
 
   bars.forEach((bar) => {
     bar.addEventListener("click", () => select(bar));
@@ -646,19 +654,11 @@
   };
   const strings = GALLERY_STRINGS[document.documentElement.lang.slice(0, 2)] || GALLERY_STRINGS.es;
 
-  function shuffle(arr) {
-    const a = arr.slice();
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-  }
-
   function buildGallery(container, project, files) {
-    const images = shuffle(files);
+    const images = files;
     let index = 0;
     let timer = null;
+    let inView = false;
 
     container.classList.add("has-gallery");
     container.removeAttribute("aria-hidden");
@@ -739,17 +739,31 @@
     }
 
     function restartTimer() {
-      if (images.length < 2) return;
+      if (images.length < 2 || !inView || document.hidden) return;
       if (timer) clearInterval(timer);
       timer = setInterval(() => goTo(index + 1), AUTOPLAY_MS);
     }
 
+    function stopTimer() {
+      if (timer) clearInterval(timer);
+      timer = null;
+    }
+
     render();
-    restartTimer();
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        inView = entry.isIntersecting;
+        if (inView) restartTimer();
+        else stopTimer();
+      },
+      { threshold: 0.5 }
+    );
+    observer.observe(container);
 
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
-        if (timer) clearInterval(timer);
+        stopTimer();
       } else {
         restartTimer();
       }
