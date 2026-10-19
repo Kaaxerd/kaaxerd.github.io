@@ -617,11 +617,11 @@
 
   const GALLERY_IMAGES = {
     nextcell: ["01.webp", "02.webp", "03.webp", "04.webp"],
-    fireball: [],
+    fireball: ["01.webp", "02.webp"],
     "escape-light-dungeon": ["01.webp", "02.webp", "03.webp", "04.webp"],
     "patata-o-plomo": ["01.webp", "02.webp", "03.webp", "04.webp"],
     "player-vs-cubos": ["01.webp", "02.webp", "03.webp", "04.webp"],
-    tfg: [],
+    tfg: ["01.webp", "02.webp", "03.webp", "04.webp"],
   };
 
   const AUTOPLAY_MS = 5000;
