@@ -617,7 +617,7 @@
 
   const GALLERY_IMAGES = {
     nextcell: ["01.webp", "02.webp", "03.webp", "04.webp"],
-    fireball: ["01.webp", "02.webp"],
+    fireball: ["01.webp", "02.webp", "03.webp", "04.webp"],
     "escape-light-dungeon": ["01.webp", "02.webp", "03.webp", "04.webp"],
     "patata-o-plomo": ["01.webp", "02.webp", "03.webp", "04.webp"],
     "player-vs-cubos": ["01.webp", "02.webp", "03.webp", "04.webp"],
